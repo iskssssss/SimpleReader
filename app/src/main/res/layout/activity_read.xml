@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.ReadActivity">
+
+    <TextView
+        android:id="@+id/tV_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="3dp"
+        android:text="标题" />
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:fastScrollEnabled="true">
+
+        <com.xrzx.reader.AutoMarqueeTextView
+            android:id="@+id/tV_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="正文"
+            android:textSize="24sp" />
+    </ScrollView>
+</LinearLayout>
