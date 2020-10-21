@@ -27,7 +27,7 @@
         android:scrollbars="none"
         android:fastScrollEnabled="true">
 
-        <com.xrzx.reader.AutoMarqueeTextView
+        <com.xrzx.reader.view.customize.AutoMarqueeTextView
             android:id="@+id/tV_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

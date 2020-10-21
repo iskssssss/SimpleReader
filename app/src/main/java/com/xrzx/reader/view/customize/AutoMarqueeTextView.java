@@ -1,4 +1,4 @@
-package com.xrzx.reader;
+package com.xrzx.reader.view.customize;
 
 
 import android.annotation.SuppressLint;

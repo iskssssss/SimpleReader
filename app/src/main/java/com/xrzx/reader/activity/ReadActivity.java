@@ -7,7 +7,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.xrzx.reader.AutoMarqueeTextView;
+import com.xrzx.reader.view.customize.AutoMarqueeTextView;
 import com.xrzx.reader.R;
 import com.xrzx.reader.book.entity.ChapterInfo;
 
@@ -26,7 +26,6 @@ public class ReadActivity extends AppCompatActivity {
 
         tVTitle = findViewById(R.id.tV_title);
         tVContent = findViewById(R.id.tV_content);
-//        tVContent.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         chapterInfo = (ChapterInfo) getIntent().getSerializableExtra("chapterInfo");
         tVTitle.setText(chapterInfo.getcTitle());
