@@ -1,2 +1,2 @@
 # SimpleReader
-简单阅读器
+简单阅读器.
