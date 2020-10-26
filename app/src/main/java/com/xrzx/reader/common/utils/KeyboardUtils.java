@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.inputmethod.InputMethodManager;
 
+/**
+ * @Description 键盘工具类
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
 public class KeyboardUtils {
 
     /**

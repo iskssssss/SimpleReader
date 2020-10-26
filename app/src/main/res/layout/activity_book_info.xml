@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ECECEC"
+    android:background="#F4F4F4"
     tools:context=".activity.BookInfoActivity">
 
     <ImageView
@@ -33,11 +33,11 @@
     <TextView
         android:id="@+id/abi_tVIntroduction"
         android:layout_width="0dp"
-        android:minHeight="64dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:minHeight="64dp"
         android:text="举头三尺无神明，掌心三寸是人间。这是耳根继《仙逆》《求魔》《我欲封天》《一念永恒》后，创作的第五部长篇小说《三寸人间》。"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"

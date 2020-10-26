@@ -1,148 +1,186 @@
 package com.xrzx.reader.book.entity;
 
-import android.widget.TextView;
-
 import java.io.Serializable;
 
+/**
+ * @Description 书籍实体类
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
 public class Book implements Serializable {
-    static final long serialVersionUID = 42L;
+    private static final long serialVersionUID = 42L;
+
+    /**
+     * 书籍编号
+     */
+    private Long bId;
 
     /**
      * 书籍名称
      */
-    private String name;
+    private String bName;
+
     /**
      * 书籍作者
      */
-    private String author;
+    private String bAuthor;
+
     /**
      * 书记类型
      */
-    private String type;
+    private String bType;
+
     /**
      * 书籍简介
      */
-    private String introduction;
+    private String bIntroduction;
+
     /**
      * 书籍地址
      */
-    private String bookUrl;
+    private String bBookUrl;
+
     /**
      * 书籍目录地址
      */
-    private String chapterUrl;
+    private String bChapterUrl;
+
     /**
      * 最后更新时间
      */
-    private String lastUpdateTime;
+    private String bLastUpdateTime;
+
     /**
      * 最后更新章节
      */
-    private String lastUpdateChapter;
+    private String bLastUpdateChapter;
+
+    /**
+     * 当前阅读章节id
+     */
+    private Long bCurrentReadChapterId;
 
     public Book() {
     }
 
     public Book(String name, String chapterUrl) {
-        this.name = name;
-        this.chapterUrl = chapterUrl;
+        this.bName = name;
+        this.bChapterUrl = chapterUrl;
     }
 
     public Book(String name, String author, String bookUrl, String chapterUrl, String lastUpdateTime, String lastUpdateChapter) {
-        this.name = name;
-        this.author = author;
-        this.bookUrl = bookUrl;
-        this.chapterUrl = chapterUrl;
-        this.lastUpdateTime = lastUpdateTime;
-        this.lastUpdateChapter = lastUpdateChapter;
+        this.bName = name;
+        this.bAuthor = author;
+        this.bBookUrl = bookUrl;
+        this.bChapterUrl = chapterUrl;
+        this.bLastUpdateTime = lastUpdateTime;
+        this.bLastUpdateChapter = lastUpdateChapter;
     }
 
     public Book(String name, String author, String type, String introduction, String bookUrl, String chapterUrl, String lastUpdateTime, String lastUpdateChapter) {
-        this.name = name;
-        this.author = author;
-        this.type = type;
-        this.introduction = introduction;
-        this.bookUrl = bookUrl;
-        this.chapterUrl = chapterUrl;
-        this.lastUpdateTime = lastUpdateTime;
-        this.lastUpdateChapter = lastUpdateChapter;
+        this.bName = name;
+        this.bAuthor = author;
+        this.bType = type;
+        this.bIntroduction = introduction;
+        this.bBookUrl = bookUrl;
+        this.bChapterUrl = chapterUrl;
+        this.bLastUpdateTime = lastUpdateTime;
+        this.bLastUpdateChapter = lastUpdateChapter;
     }
 
-    public String getName() {
-        return name;
+    public Long getbId() {
+        return bId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setbId(Long bId) {
+        this.bId = bId;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getbName() {
+        return bName;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setbName(String bName) {
+        this.bName = bName;
     }
 
-    public String getType() {
-        return type;
+    public String getbAuthor() {
+        return bAuthor;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setbAuthor(String bAuthor) {
+        this.bAuthor = bAuthor;
     }
 
-    public String getIntroduction() {
-        return introduction;
+    public String getbType() {
+        return bType;
     }
 
-    public void setIntroduction(String introduction) {
-        this.introduction = introduction;
+    public void setbType(String bType) {
+        this.bType = bType;
     }
 
-    public String getBookUrl() {
-        return bookUrl;
+    public String getbIntroduction() {
+        return bIntroduction;
     }
 
-    public void setBookUrl(String bookUrl) {
-        this.bookUrl = bookUrl;
+    public void setbIntroduction(String bIntroduction) {
+        this.bIntroduction = bIntroduction;
     }
 
-    public String getChapterUrl() {
-        return chapterUrl;
+    public String getbBookUrl() {
+        return bBookUrl;
     }
 
-    public void setChapterUrl(String chapterUrl) {
-        this.chapterUrl = chapterUrl;
+    public void setbBookUrl(String bBookUrl) {
+        this.bBookUrl = bBookUrl;
     }
 
-    public String getLastUpdateTime() {
-        return lastUpdateTime;
+    public String getbChapterUrl() {
+        return bChapterUrl;
     }
 
-    public void setLastUpdateTime(String lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
+    public void setbChapterUrl(String bChapterUrl) {
+        this.bChapterUrl = bChapterUrl;
     }
 
-    public String getLastUpdateChapter() {
-        return lastUpdateChapter;
+    public String getbLastUpdateTime() {
+        return bLastUpdateTime;
     }
 
-    public void setLastUpdateChapter(String lastUpdateChapter) {
-        this.lastUpdateChapter = lastUpdateChapter;
+    public void setbLastUpdateTime(String bLastUpdateTime) {
+        this.bLastUpdateTime = bLastUpdateTime;
+    }
+
+    public String getbLastUpdateChapter() {
+        return bLastUpdateChapter;
+    }
+
+    public void setbLastUpdateChapter(String bLastUpdateChapter) {
+        this.bLastUpdateChapter = bLastUpdateChapter;
+    }
+
+    public Long getbCurrentReadChapterId() {
+        return bCurrentReadChapterId;
+    }
+
+    public void setbCurrentReadChapterId(Long bCurrentReadChapterId) {
+        this.bCurrentReadChapterId = bCurrentReadChapterId;
     }
 
     @Override
     public String toString() {
         return "Book{" +
-                "name='" + name + '\'' +
-                ", author='" + author + '\'' +
-                ", type='" + type + '\'' +
-                ", introduction='" + introduction + '\'' +
-                ", bookUrl='" + bookUrl + '\'' +
-                ", chapterUrl='" + chapterUrl + '\'' +
-                ", lastUpdateTime='" + lastUpdateTime + '\'' +
-                ", lastUpdateChapter='" + lastUpdateChapter + '\'' +
+                "bId=" + bId +
+                ", bName='" + bName + '\'' +
+                ", bAuthor='" + bAuthor + '\'' +
+                ", bType='" + bType + '\'' +
+                ", bIntroduction='" + bIntroduction + '\'' +
+                ", bBookUrl='" + bBookUrl + '\'' +
+                ", bChapterUrl='" + bChapterUrl + '\'' +
+                ", bLastUpdateTime='" + bLastUpdateTime + '\'' +
+                ", bLastUpdateChapter='" + bLastUpdateChapter + '\'' +
+                ", currentReadChapterId=" + bCurrentReadChapterId +
                 '}';
     }
 }

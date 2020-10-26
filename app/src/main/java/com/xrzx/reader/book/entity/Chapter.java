@@ -3,7 +3,13 @@ package com.xrzx.reader.book.entity;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
-public class ChapterInfo implements Serializable {
+/**
+ * @Description 章节信息实体类
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
+public class Chapter implements Serializable {
+    private static final long serialVersionUID = 42L;
 
     /**
      * 章节id
@@ -12,7 +18,7 @@ public class ChapterInfo implements Serializable {
     /**
      * 书籍编号
      */
-    private String bId;
+    private Long bId;
     /**
      * 章节序号
      */
@@ -30,13 +36,12 @@ public class ChapterInfo implements Serializable {
      */
     private String cContent;
 
-    public ChapterInfo(String cTitle, String cUrl) {
+    public Chapter(String cTitle, String cUrl) {
         this.cTitle = cTitle;
         this.cUrl = cUrl;
     }
 
-    public ChapterInfo(String bId, Integer cNumber, String cTitle, String cUrl) {
-        this.bId = bId;
+    public Chapter(Integer cNumber, String cTitle, String cUrl) {
         this.cNumber = cNumber;
         this.cTitle = cTitle;
         this.cUrl = cUrl;
@@ -50,11 +55,11 @@ public class ChapterInfo implements Serializable {
         this.cId = cId;
     }
 
-    public String getbId() {
+    public Long  getbId() {
         return bId;
     }
 
-    public void setbId(String bId) {
+    public void setbId(Long bId) {
         this.bId = bId;
     }
 

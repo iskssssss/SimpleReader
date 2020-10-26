@@ -1,13 +1,11 @@
 package com.xrzx.reader.book.http;
 
 import android.text.Html;
-import android.util.Log;
 
 import com.xrzx.reader.book.entity.Book;
-import com.xrzx.reader.book.entity.ChapterInfo;
-import com.xrzx.reader.common.http.callback.HttpCallBack;
-import com.xrzx.reader.common.http.callback.ResponseCallBack;
-import com.xrzx.reader.common.http.callback.ResultCallBack;
+import com.xrzx.reader.book.entity.Chapter;
+import com.xrzx.reader.common.callback.ResponseCallBack;
+import com.xrzx.reader.common.callback.ResultCallBack;
 import com.xrzx.reader.common.http.utils.HttpUtils;
 
 import org.jsoup.Jsoup;
@@ -20,6 +18,11 @@ import java.util.List;
 
 import okhttp3.FormBody;
 
+/**
+ * @Description 书籍爬取Api
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
 public class BookHttpApi {
     private static final String XBIQUGE_HOME_URL = "http://www.xbiquge.la";
     private static final String CHAR_ENCODING = "utf-8";
@@ -83,7 +86,7 @@ public class BookHttpApi {
      * @param callBack 回调
      */
     public static void getBookDetailsInfo(final Book book, final ResultCallBack<Book> callBack) {
-        HttpUtils.getHtmlStringByGet(book.getBookUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
+        HttpUtils.getHtmlStringByGet(book.getbBookUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
             @Override
             public void onSuccess(String data) {
                 Document doc = Jsoup.parse(data);
@@ -92,10 +95,10 @@ public class BookHttpApi {
                 String introduction = doc.getElementById("intro").getElementsByTag("p").get(1).html();
                 String lastUpdateTime = doc.getElementById("info").getElementsByTag("p").get(2).html().replace("最后更新：", "");
                 String lastUpdateChapter = doc.getElementById("info").getElementsByTag("p").get(3).getElementsByTag("a").first().html();
-                book.setType(type);
-                book.setIntroduction(introduction);
-                book.setLastUpdateTime(lastUpdateTime);
-                book.setLastUpdateChapter(lastUpdateChapter);
+                book.setbType(type);
+                book.setbIntroduction(introduction);
+                book.setbLastUpdateTime(lastUpdateTime);
+                book.setbLastUpdateChapter(lastUpdateChapter);
                 callBack.onSuccess(book);
             }
 
@@ -112,8 +115,8 @@ public class BookHttpApi {
      * @param book     书籍
      * @param callBack 回调
      */
-    public static void getBookChapters(final Book book, final ArrayList<ChapterInfo> chapterList, final ResultCallBack<List<ChapterInfo>> callBack) {
-        HttpUtils.getHtmlStringByGet(book.getChapterUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
+    public static void getBookChapters(final Book book, final ArrayList<Chapter> chapterList, final ResultCallBack<List<Chapter>> callBack) {
+        HttpUtils.getHtmlStringByGet(book.getbChapterUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
             @Override
             public void onSuccess(String data) {
                 Elements ddItem = null;
@@ -139,7 +142,7 @@ public class BookHttpApi {
                             if (startChar != '/') {
                                 url = "/" + url;
                             }
-                            chapterList.add(new ChapterInfo(title, XBIQUGE_HOME_URL + url));
+                            chapterList.add(new Chapter(title, XBIQUGE_HOME_URL + url));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -158,11 +161,11 @@ public class BookHttpApi {
     /**
      * 获取章节正文
      *
-     * @param chapterInfo 章节
+     * @param chapter 章节
      * @param callBack    回调
      */
-    public static void getBookChapterContent(final ChapterInfo chapterInfo, final ResultCallBack<String> callBack) {
-        HttpUtils.getHtmlStringByGet(chapterInfo.getcUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
+    public static void getBookChapterContent(final Chapter chapter, final ResultCallBack<String> callBack) {
+        HttpUtils.getHtmlStringByGet(chapter.getcUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
             @Override
             public void onSuccess(String data) {
                 try {

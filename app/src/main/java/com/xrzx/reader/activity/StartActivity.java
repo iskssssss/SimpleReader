@@ -14,29 +14,36 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.xrzx.reader.R;
 import com.xrzx.reader.common.utils.DateUtils;
+import com.xrzx.reader.common.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * @Description 启动页
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class StartActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private final static ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+    private final static ExecutorService OTHER_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getOtherExecutorServiceThreadPool();
     private final static AtomicBoolean next = new AtomicBoolean(false);
-    private TextView as_tVCountdown;
+    private TextView asTVCountdown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        as_tVCountdown = findViewById(R.id.as_tVCountdown);
-        as_tVCountdown.setOnClickListener(this);
+
+        asTVCountdown = findViewById(R.id.as_tVCountdown);
+        asTVCountdown.setOnClickListener(this);
         LocalDateTime startTime = DateUtils.now();
-        executorService.execute(() -> {
+        OTHER_EXECUTOR_SERVICE_THREAD_POOL.execute(() -> {
             long millis;
             do {
                 if (next.get()) {
@@ -79,10 +86,13 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             super.handleMessage(msg);
             switch (msg.what) {
                 case 1:
-                    as_tVCountdown.setText(msg.obj + " | 点击跳过");
+                    asTVCountdown.setText(msg.obj + " | 点击跳过");
                     break;
                 case 2:
                     System.out.println("ss");
+                    break;
+                default:
+                    System.out.println("default");
                     break;
             }
         }

@@ -15,26 +15,26 @@ tools:context=".activity.ChaptersActivity">
     app:layout_constraintBottom_toTopOf="@+id/button">
 </ListView>
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:background="#B3B3B3"
-    android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#F4F4F4"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="刷新" />
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="刷新" />
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:text="逆序" />
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="逆序" />
 
-</LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

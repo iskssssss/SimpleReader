@@ -1,5 +1,5 @@
 package com.xrzx.reader.view.adapter;
-import com.xrzx.reader.book.entity.ChapterInfo;
+import com.xrzx.reader.book.entity.Chapter;
 import com.xrzx.reader.R;
 
 import android.content.Context;
@@ -14,10 +14,15 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
-public class ChapterAdapter extends ArrayAdapter<ChapterInfo> {
+/**
+ * @Description 章节适配器
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
+public class ChapterAdapter extends ArrayAdapter<Chapter> {
     private int resourceID;
 
-    public ChapterAdapter(@NonNull Context context, int resource, @NonNull List<ChapterInfo> objects) {
+    public ChapterAdapter(@NonNull Context context, int resource, @NonNull List<Chapter> objects) {
         super(context, resource, objects);
         resourceID = resource;
     }
@@ -25,7 +30,7 @@ public class ChapterAdapter extends ArrayAdapter<ChapterInfo> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        ChapterInfo chapterInfo = getItem(position);
+        Chapter chapter = getItem(position);
         View view;
         ViewHolder viewHolder;
         if (convertView == null) {
@@ -37,7 +42,7 @@ public class ChapterAdapter extends ArrayAdapter<ChapterInfo> {
             view = convertView;
             viewHolder = (ViewHolder) view.getTag();
         }
-        viewHolder.cTitle.setText(chapterInfo.getcTitle());
+        viewHolder.cTitle.setText(chapter.getcTitle());
         return view;
     }
 

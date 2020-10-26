@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#CDDFCD"
     android:orientation="vertical"
     tools:context=".activity.ReadActivity">
 
@@ -23,11 +24,11 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
+        android:fastScrollEnabled="true"
         android:overScrollMode="never"
-        android:scrollbars="none"
-        android:fastScrollEnabled="true">
+        android:scrollbars="none">
 
-        <com.xrzx.reader.view.customize.AutoMarqueeTextView
+        <TextView
             android:id="@+id/tV_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

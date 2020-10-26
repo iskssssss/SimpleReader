@@ -1,124 +1,142 @@
 package com.xrzx.reader.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.xrzx.reader.R;
-import com.xrzx.reader.book.entity.Book;
-import com.xrzx.reader.book.http.BookHttpApi;
-import com.xrzx.reader.common.utils.KeyboardUtils;
-import com.xrzx.reader.common.http.callback.ResultCallBack;
-import com.xrzx.reader.view.adapter.SearchBookAdapter;
-
-import org.jetbrains.annotations.NotNull;
+import com.xrzx.reader.fragment.BaseTitleFragment;
+import com.xrzx.reader.fragment.BookShelfFragment;
+import com.xrzx.reader.fragment.SearchFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import okhttp3.FormBody;
+import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private final static ExecutorService executorService = Executors.newFixedThreadPool(1);
+/**
+ * @Description 主界面
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
+public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
-    private EditText eTSearchByBookName;
-    private Button btnSearch;
+    private ViewPager amVPTitle;
+    private ViewPager amVPMain;
 
-    private ListView listView;
-    private ArrayList<Book> titleList = new ArrayList<>();
-    private SearchBookAdapter chapterAdapter;
+    LinearLayout absLLBookShelfItem;
+    ImageView absLLBookShelfItemImg;
+    LinearLayout absLLBookSearchItem;
+    ImageView absLLBookSearchItemImg;
+
+    private FragmentPagerAdapter mAdpater;
+
+    private List<Fragment> mainFragments;
+    private List<Fragment> titleFragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        eTSearchByBookName = findViewById(R.id.eTSearchByBookName);
-        btnSearch = findViewById(R.id.btnSearch);
-        btnSearch.setOnClickListener(this);
+        absLLBookShelfItemImg = findViewById(R.id.am_lLBookShelfItemImg);
+        absLLBookSearchItemImg = findViewById(R.id.am_lLBookSearchItemImg);
 
-        listView = findViewById(R.id.listView);
-        chapterAdapter = new SearchBookAdapter(MainActivity.this, R.layout.search_book_item, titleList);
-        listView.setAdapter(chapterAdapter);
-        listView.setOnItemClickListener((parent, view, position, id) -> executorService.execute(() -> {
-            Book book = titleList.get(position);
-            BookHttpApi.getBookDetailsInfo(book, new ResultCallBack<Book>() {
-                @Override
-                public void onSuccess(Book result) {
-                    Intent intent = new Intent(MainActivity.this, BookInfoActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    intent.putExtra("book", book);
-                    startActivity(intent);
-                }
+        absLLBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_select);
+        absLLBookSearchItemImg.setBackgroundResource(R.drawable.search_default);
 
-                @Override
-                public void onError(Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        }));
+        absLLBookShelfItem = findViewById(R.id.am_lLBookShelfItem);
+        absLLBookShelfItem.setOnClickListener(this);
+        absLLBookSearchItem = findViewById(R.id.am_lLBookSearchItem);
+        absLLBookSearchItem.setOnClickListener(this);
+
+
+        titleFragments = new ArrayList<>();
+        titleFragments.add(new BaseTitleFragment());
+        amVPTitle = findViewById(R.id.am_vPTitle);
+        amVPTitle.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+            @Override
+            public int getCount() {
+                return titleFragments.size();
+            }
+
+            @NonNull
+            @Override
+            public Fragment getItem(int position) {
+                return titleFragments.get(position);
+            }
+        });
+
+        mainFragments = new ArrayList<>();
+        mainFragments.add(new BookShelfFragment());
+        mainFragments.add(new SearchFragment());
+        amVPMain = findViewById(R.id.am_vPMain);
+        amVPMain.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                setPageView(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+        amVPMain.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+            @Override
+            public int getCount() {
+                return mainFragments.size();
+            }
+
+            @NonNull
+            @Override
+            public Fragment getItem(int position) {
+                return mainFragments.get(position);
+            }
+        });
     }
-
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btnSearch:
-                onClick_btnSearch(v);
+            case R.id.am_lLBookShelfItem:
+                setPageView(0);
+                break;
+            case R.id.am_lLBookSearchItem:
+                setPageView(1);
                 break;
             default:
-                //TODO ...
+                System.out.println("onClickAbsLLBookItem-default");
                 break;
         }
     }
 
-    private void onClick_btnSearch(View v) {
-        String searchkey = eTSearchByBookName.getText().toString();
-        if ("".equals(searchkey)) {
-            return;
+    private void setPageView(int pageId) {
+        switch (pageId) {
+            case 0:
+                ((BaseTitleFragment) titleFragments.get(0)).setTitle("书架");
+                absLLBookSearchItemImg.setBackgroundResource(R.drawable.search_default);
+                absLLBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_select);
+                break;
+            case 1:
+                ((BaseTitleFragment) titleFragments.get(0)).setTitle("搜索");
+                absLLBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_default);
+                absLLBookSearchItemImg.setBackgroundResource(R.drawable.search_select);
+                break;
+            default:
+                System.out.println("onClickAbsLLBookItem-default");
+                break;
         }
-        titleList.clear();
-        FormBody.Builder searchDict = new FormBody.Builder();
-        searchDict.add("searchkey", searchkey);
-        BookHttpApi.searchBooks(searchDict, titleList, new ResultCallBack<List<Book>>() {
-            @Override
-            public void onSuccess(List<Book> result) {
-                Message msg = Message.obtain();
-                msg.what = 1;
-                handler.sendMessage(msg);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
-            }
-        });
-        KeyboardUtils.hideKeyboard(this);
+        amVPMain.setCurrentItem(pageId);
     }
-
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(@NotNull Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    chapterAdapter.notifyDataSetChanged();
-                    break;
-                case 2:
-                    System.out.println("ss");
-                    break;
-            }
-        }
-    };
 }

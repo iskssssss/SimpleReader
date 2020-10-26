@@ -1,7 +1,7 @@
 package com.xrzx.reader.common.http.utils;
 
-import com.xrzx.reader.common.http.callback.HttpCallBack;
-import com.xrzx.reader.common.http.callback.ResponseCallBack;
+import com.xrzx.reader.common.callback.HttpCallBack;
+import com.xrzx.reader.common.callback.ResponseCallBack;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +19,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+/**
+ * @Description http 工具类
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
 public class HttpUtils {
     /**
      * OkHttpClient 实例(单例模式)

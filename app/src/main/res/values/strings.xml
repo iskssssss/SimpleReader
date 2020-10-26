@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Reader</string>
+    <string name="delimiter">◦</string>
+    <string name="search_str">搜索</string>
+    <string name="bookshelf_str">书架</string>
 </resources>

@@ -128,10 +128,12 @@ public class DateUtils {
     public static String toString(LocalDateTime date) {
         return DateTimeFormat.DATE_TIME_FORMAT.getDateTimeFormat().format(date);
     }
+
     /**
      * 获取两个时间差
+     *
      * @param startTime 开始时间
-     * @param endTime 现在时间
+     * @param endTime   现在时间
      * @return 差
      */
     public static Duration duration(LocalDateTime startTime, LocalDateTime endTime) {
@@ -140,8 +142,9 @@ public class DateUtils {
 
     /**
      * 获取两个时间差（毫秒）
+     *
      * @param startTime 开始时间
-     * @param endTime 现在时间
+     * @param endTime   现在时间
      * @return 差
      */
     public static long durationByMillis(LocalDateTime startTime, LocalDateTime endTime) {

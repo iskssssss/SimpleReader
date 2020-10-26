@@ -1,17 +1,21 @@
 package com.xrzx.reader.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.xrzx.reader.R;
 import com.xrzx.reader.book.entity.Book;
-import com.xrzx.reader.book.entity.ChapterInfo;
 
+/**
+ * @Description 书籍信息页
+ * @Author ks
+ * @Date 2020/10/26 11:37
+ */
 public class BookInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Book book;
@@ -42,22 +46,22 @@ public class BookInfoActivity extends AppCompatActivity implements View.OnClickL
         tVLastUpdateChapter = findViewById(R.id.abi_tVLastUpdateChapter);
 
         book = (Book) getIntent().getSerializableExtra("book");
-        tVName.setText(book.getName());
-        tVAuthor.setText(book.getAuthor());
-        tVType.setText(book.getType());
-        tVLastUpdateTime.setText(book.getLastUpdateTime());
-        tVIntroduction.setText(book.getIntroduction());
-        tVLastUpdateChapter.setText(book.getLastUpdateChapter());
+        tVName.setText(book.getbName());
+        tVAuthor.setText(book.getbAuthor());
+        tVType.setText(book.getbType());
+        tVLastUpdateTime.setText(book.getbLastUpdateTime());
+        tVIntroduction.setText(book.getbIntroduction());
+        tVLastUpdateChapter.setText(book.getbLastUpdateChapter());
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.abi_btnAddBookshelf:
-                onClick_btnAddBookshelf(v);
+                onClickBtnAddBookShelf(v);
                 break;
             case R.id.abi_btnReadNow:
-                onClick_btnReadNow(v);
+                onClickBtnReadNow(v);
                 break;
             default:
                 //TODO ...
@@ -70,7 +74,7 @@ public class BookInfoActivity extends AppCompatActivity implements View.OnClickL
      *
      * @param v View
      */
-    private void onClick_btnReadNow(View v) {
+    private void onClickBtnReadNow(View v) {
         Intent intent = new Intent(BookInfoActivity.this, ChaptersActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.putExtra("book", book);
@@ -82,6 +86,6 @@ public class BookInfoActivity extends AppCompatActivity implements View.OnClickL
      *
      * @param v View
      */
-    private void onClick_btnAddBookshelf(View v) {
+    private void onClickBtnAddBookShelf(View v) {
     }
 }
