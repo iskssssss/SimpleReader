@@ -3,4 +3,6 @@
     <string name="delimiter">◦</string>
     <string name="search_str">搜索</string>
     <string name="bookshelf_str">书架</string>
+    <string name="add_bookshelf_str">加入书架</string>
+    <string name="remove_bookshelf_str">已在书架</string>
 </resources>

@@ -1,6 +1,9 @@
 package com.xrzx.reader.activity;
 
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -11,7 +14,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.xrzx.commonlibrary.database.dao.base.BaseDao;
+import com.xrzx.commonlibrary.entity.Book;
+import com.xrzx.commonlibrary.entity.Chapter;
+import com.xrzx.commonlibrary.utils.ToastUtils;
 import com.xrzx.reader.R;
+import com.xrzx.commonlibrary.database.helper.CustomDatabaseHelper;
 import com.xrzx.reader.fragment.BaseTitleFragment;
 import com.xrzx.reader.fragment.BookShelfFragment;
 import com.xrzx.reader.fragment.SearchFragment;
@@ -28,16 +36,9 @@ import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CU
  */
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
-    private ViewPager amVPTitle;
-    private ViewPager amVPMain;
-
-    LinearLayout absLLBookShelfItem;
-    ImageView absLLBookShelfItemImg;
-    LinearLayout absLLBookSearchItem;
-    ImageView absLLBookSearchItemImg;
-
-    private FragmentPagerAdapter mAdpater;
-
+    private ViewPager vpMain;
+    private ImageView llBookShelfItemImg;
+    private ImageView llBookSearchItemImg;
     private List<Fragment> mainFragments;
     private List<Fragment> titleFragments;
 
@@ -45,23 +46,27 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // 数据库和提示框初始化
+        CustomDatabaseHelper.getCustomDatabaseHelper(MainActivity.this);
+        ToastUtils.setToast(MainActivity.this);
 
-        absLLBookShelfItemImg = findViewById(R.id.am_lLBookShelfItemImg);
-        absLLBookSearchItemImg = findViewById(R.id.am_lLBookSearchItemImg);
+        // 底部菜单初始化
+        llBookShelfItemImg = findViewById(R.id.am_lLBookShelfItemImg);
+        llBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_select);
+        llBookSearchItemImg = findViewById(R.id.am_lLBookSearchItemImg);
+        llBookSearchItemImg.setBackgroundResource(R.drawable.search_default);
 
-        absLLBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_select);
-        absLLBookSearchItemImg.setBackgroundResource(R.drawable.search_default);
+        // 底部按钮初始化
+        LinearLayout llBookShelfItem = findViewById(R.id.am_lLBookShelfItem);
+        llBookShelfItem.setOnClickListener(this);
+        LinearLayout llBookSearchItem = findViewById(R.id.am_lLBookSearchItem);
+        llBookSearchItem.setOnClickListener(this);
 
-        absLLBookShelfItem = findViewById(R.id.am_lLBookShelfItem);
-        absLLBookShelfItem.setOnClickListener(this);
-        absLLBookSearchItem = findViewById(R.id.am_lLBookSearchItem);
-        absLLBookSearchItem.setOnClickListener(this);
-
-
+        // 顶部菜单初始化
         titleFragments = new ArrayList<>();
         titleFragments.add(new BaseTitleFragment());
-        amVPTitle = findViewById(R.id.am_vPTitle);
-        amVPTitle.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        ViewPager vpTitle = findViewById(R.id.am_vPTitle);
+        vpTitle.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             @Override
             public int getCount() {
                 return titleFragments.size();
@@ -74,11 +79,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
         });
 
+        // 中间容器初始化
         mainFragments = new ArrayList<>();
         mainFragments.add(new BookShelfFragment());
         mainFragments.add(new SearchFragment());
-        amVPMain = findViewById(R.id.am_vPMain);
-        amVPMain.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        vpMain = findViewById(R.id.am_vPMain);
+        vpMain.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -92,7 +98,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             public void onPageScrollStateChanged(int state) {
             }
         });
-        amVPMain.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        vpMain.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             @Override
             public int getCount() {
                 return mainFragments.size();
@@ -106,6 +112,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -121,22 +128,41 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
+    /**
+     * 底部选择按钮切换
+     *
+     * @param pageId 当前选择的按钮
+     */
     private void setPageView(int pageId) {
-        switch (pageId) {
-            case 0:
-                ((BaseTitleFragment) titleFragments.get(0)).setTitle("书架");
-                absLLBookSearchItemImg.setBackgroundResource(R.drawable.search_default);
-                absLLBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_select);
-                break;
-            case 1:
-                ((BaseTitleFragment) titleFragments.get(0)).setTitle("搜索");
-                absLLBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_default);
-                absLLBookSearchItemImg.setBackgroundResource(R.drawable.search_select);
-                break;
-            default:
-                System.out.println("onClickAbsLLBookItem-default");
-                break;
+        try {
+            switch (pageId) {
+                case 0:
+                    ((BaseTitleFragment) titleFragments.get(0)).setTitle(getString(R.string.bookshelf_str));
+                    llBookSearchItemImg.setBackgroundResource(R.drawable.search_default);
+                    llBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_select);
+                    break;
+                case 1:
+                    ((BaseTitleFragment) titleFragments.get(0)).setTitle(getString(R.string.search_str));
+                    llBookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_default);
+                    llBookSearchItemImg.setBackgroundResource(R.drawable.search_select);
+                    break;
+                default:
+                    System.out.println("onClickAbsLLBookItem-default");
+                    break;
+            }
+            vpMain.setCurrentItem(pageId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastUtils.show("发生错误...");
         }
-        amVPMain.setCurrentItem(pageId);
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            System.out.println("返回");
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

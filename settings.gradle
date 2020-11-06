@@ -1,2 +1,3 @@
+include ':app:commonlibrary'
 include ':app'
 rootProject.name = "SimpleReader"

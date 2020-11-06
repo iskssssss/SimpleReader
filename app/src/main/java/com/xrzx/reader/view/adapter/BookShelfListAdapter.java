@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.xrzx.reader.R;
-import com.xrzx.reader.book.entity.Book;
+import com.xrzx.commonlibrary.entity.Book;
 
 import java.util.List;
 
@@ -22,11 +22,11 @@ import java.util.List;
  * @Date 2020/10/26 11:37
  */
 public class BookShelfListAdapter extends ArrayAdapter<Book> {
-    private int resourceID;
+    private final int resourceId;
 
     public BookShelfListAdapter(@NonNull Context context, int resource, @NonNull List<Book> objects) {
         super(context, resource, objects);
-        resourceID = resource;
+        resourceId = resource;
     }
 
     @NonNull
@@ -36,13 +36,14 @@ public class BookShelfListAdapter extends ArrayAdapter<Book> {
         View view;
         ViewHolder viewHolder;
         if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(resourceID, parent, false);
+            view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.iVCover = view.findViewById(R.id.bsbi_iVCover);
             viewHolder.tVName = view.findViewById(R.id.bsbi_tVName);
             viewHolder.tVAuthor = view.findViewById(R.id.bsbi_tVAuthor);
             viewHolder.tVLastUpdateTime = view.findViewById(R.id.bsbi_tVLastUpdateTime);
             viewHolder.tVLastUpdateChapter = view.findViewById(R.id.bsbi_tVLastUpdateChapter);
+            viewHolder.tVDetails = view.findViewById(R.id.bsbi_tVDetails);
             view.setTag(viewHolder);
         } else {
             view = convertView;
@@ -54,7 +55,23 @@ public class BookShelfListAdapter extends ArrayAdapter<Book> {
         viewHolder.tVAuthor.setText(chapterInfo.getbAuthor());
         viewHolder.tVLastUpdateTime.setText(chapterInfo.getbLastUpdateTime());
         viewHolder.tVLastUpdateChapter.setText(chapterInfo.getbLastUpdateChapter());
+        viewHolder.tVDetails.setOnClickListener(v -> onItemDetailsClickListener.onClick(position));
         return view;
+    }
+
+    OnItemDetailsClickListener onItemDetailsClickListener;
+
+    public void setOnItemDetailsClickListener(OnItemDetailsClickListener onItemDetailsClickListener) {
+        this.onItemDetailsClickListener = onItemDetailsClickListener;
+    }
+
+    public interface OnItemDetailsClickListener {
+        /**
+         * 点击事件
+         *
+         * @param position 点击项
+         */
+        void onClick(int position);
     }
 
     private static class ViewHolder {
@@ -63,5 +80,6 @@ public class BookShelfListAdapter extends ArrayAdapter<Book> {
         private TextView tVAuthor;
         private TextView tVLastUpdateTime;
         private TextView tVLastUpdateChapter;
+        private TextView tVDetails;
     }
 }

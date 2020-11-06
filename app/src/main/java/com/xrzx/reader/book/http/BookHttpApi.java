@@ -1,12 +1,15 @@
 package com.xrzx.reader.book.http;
 
+import android.content.ContentValues;
 import android.text.Html;
 
-import com.xrzx.reader.book.entity.Book;
-import com.xrzx.reader.book.entity.Chapter;
-import com.xrzx.reader.common.callback.ResponseCallBack;
-import com.xrzx.reader.common.callback.ResultCallBack;
-import com.xrzx.reader.common.http.utils.HttpUtils;
+import com.xrzx.commonlibrary.entity.Book;
+import com.xrzx.commonlibrary.entity.Chapter;
+import com.xrzx.commonlibrary.callback.ResponseCallBack;
+import com.xrzx.commonlibrary.callback.ResultCallBack;
+import com.xrzx.commonlibrary.database.dao.BookInfoDao;
+import com.xrzx.commonlibrary.utils.SQLiteUtils;
+import com.xrzx.commonlibrary.utils.http.HttpUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -46,6 +49,7 @@ public class BookHttpApi {
                     tr = divTable.getElementsByTag("tr");
                     if (tr == null || tr.isEmpty()) {
                         callBack.onError(new Exception("获取失败"));
+                        return;
                     }
                 } catch (Exception e) {
                     callBack.onError(e);
@@ -80,26 +84,53 @@ public class BookHttpApi {
     }
 
     /**
-     *
      * 获取书籍详细信息
-     * @param book 书籍信息
+     *
+     * @param book     书籍信息
      * @param callBack 回调
      */
     public static void getBookDetailsInfo(final Book book, final ResultCallBack<Book> callBack) {
         HttpUtils.getHtmlStringByGet(book.getbBookUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
             @Override
             public void onSuccess(String data) {
-                Document doc = Jsoup.parse(data);
-                Element con_top = doc.getElementsByClass("con_top").first();
-                String type = con_top.getElementsByTag("a").get(2).html();
-                String introduction = doc.getElementById("intro").getElementsByTag("p").get(1).html();
-                String lastUpdateTime = doc.getElementById("info").getElementsByTag("p").get(2).html().replace("最后更新：", "");
-                String lastUpdateChapter = doc.getElementById("info").getElementsByTag("p").get(3).getElementsByTag("a").first().html();
-                book.setbType(type);
-                book.setbIntroduction(introduction);
-                book.setbLastUpdateTime(lastUpdateTime);
-                book.setbLastUpdateChapter(lastUpdateChapter);
-                callBack.onSuccess(book);
+                try {
+                    Document doc = Jsoup.parse(data);
+                    String lastUpdateTime = doc.getElementById("info").getElementsByTag("p").get(2).html().replace("最后更新：", "");
+                    String lastUpdateChapter = doc.getElementById("info").getElementsByTag("p").get(3).getElementsByTag("a").first().html();
+
+                    List<Book> books = BookInfoDao.findSelection("b_name = ? and b_author = ?", book.getbName(), book.getbAuthor());
+                    if (!books.isEmpty()) {
+                        final Book book1 = books.get(0);
+                        book.setbId(book1.getbId());
+                        book.setbUniquelyIdentifies(book1.getbUniquelyIdentifies());
+                        book.setbType(book1.getbType());
+                        book.setbIntroduction(book1.getbIntroduction());
+                        book.setbCurrentReadChapterId(book1.getbCurrentReadChapterId());
+                        book.setbCurrentReadChapterPage(book1.getbCurrentReadChapterPage());
+                        book.setBookShelf(true);
+                        /*if (!book1.getbLastUpdateChapter().equals(lastUpdateChapter)) {
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put("b_last_update_chapter", lastUpdateChapter);
+                            contentValues.put("b_last_update_time", lastUpdateTime);
+                            BookInfoDao.update(contentValues, "b_uniquely_identifies = ?", book1.getbUniquelyIdentifies());
+                        }*/
+                        callBack.onSuccess(book);
+                        return;
+                    }
+                    Element conTop = doc.getElementsByClass("con_top").first();
+                    String type = conTop.getElementsByTag("a").get(2).html();
+                    String introduction = doc.getElementById("intro").getElementsByTag("p").get(1).html();
+                    book.setbType(type);
+                    book.setbIntroduction(introduction);
+                    book.setbUniquelyIdentifies(BookInfoDao.getUniquelyIdentifies());
+                    book.setbLastUpdateTime(lastUpdateTime);
+                    book.setbLastUpdateChapter(lastUpdateChapter);
+                    book.setbCurrentReadChapterId(1);
+                    book.setbCurrentReadChapterPage(1);
+                    callBack.onSuccess(book);
+                } catch (Exception e) {
+                    callBack.onError(e);
+                }
             }
 
             @Override
@@ -115,7 +146,7 @@ public class BookHttpApi {
      * @param book     书籍
      * @param callBack 回调
      */
-    public static void getBookChapters(final Book book, final ArrayList<Chapter> chapterList, final ResultCallBack<List<Chapter>> callBack) {
+    public static void getBookChapters(final Book book, final ArrayList<Chapter> chapterList, final ResultCallBack<ArrayList<Chapter>> callBack) {
         HttpUtils.getHtmlStringByGet(book.getbChapterUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
             @Override
             public void onSuccess(String data) {
@@ -127,10 +158,13 @@ public class BookHttpApi {
                     ddItem = dl.getElementsByTag("dd");
                     if (ddItem == null || ddItem.isEmpty()) {
                         callBack.onError(new Exception("获取失败。"));
+                        return;
                     }
                 } catch (Exception e) {
                     callBack.onError(e);
+                    return;
                 }
+                int cNumber = 0;
                 for (Element dd : ddItem) {
                     try {
                         Elements as = dd.getElementsByTag("a");
@@ -142,7 +176,7 @@ public class BookHttpApi {
                             if (startChar != '/') {
                                 url = "/" + url;
                             }
-                            chapterList.add(new Chapter(title, XBIQUGE_HOME_URL + url));
+                            chapterList.add(new Chapter(book.getbUniquelyIdentifies(), ++cNumber, title, XBIQUGE_HOME_URL + url));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -161,8 +195,8 @@ public class BookHttpApi {
     /**
      * 获取章节正文
      *
-     * @param chapter 章节
-     * @param callBack    回调
+     * @param chapter  章节
+     * @param callBack 回调
      */
     public static void getBookChapterContent(final Chapter chapter, final ResultCallBack<String> callBack) {
         HttpUtils.getHtmlStringByGet(chapter.getcUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
@@ -171,10 +205,16 @@ public class BookHttpApi {
                 try {
                     Document doc = Jsoup.parse(data);
                     Element divContent = doc.getElementById("content");
-                    String content = Html.fromHtml(divContent.html()).toString();
-                    char c = 160;
-                    String spaec = "" + c;
-                    content = content.replace(spaec, "  ");
+                    String content = Html.fromHtml(divContent.html(), Html.FROM_HTML_MODE_LEGACY).toString();
+                    char c1 = 160, c2 = 32;
+                    String spaec1 = "" + c1;
+                    content = content
+                            .replace(spaec1, "  ")
+                            .replace("    ", "  ")
+                            .replace("    ", "  ")
+                            .replace("\n\n", "\n")
+                            .replace("亲,点击进去,给个好评呗,分数越高更新越快,据说给新笔趣阁打满分的最后都找到了漂亮的老婆哦!\n" +
+                                    "手机站全新改版升级地址：http://m.xbiquge.la，数据和书签与电脑站同步，无广告清新阅读！", "");
                     callBack.onSuccess(content);
                 } catch (Exception e) {
                     callBack.onError(e);

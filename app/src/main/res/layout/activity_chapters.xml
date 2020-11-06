@@ -12,7 +12,7 @@ tools:context=".activity.ChaptersActivity">
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight="1"
-    app:layout_constraintBottom_toTopOf="@+id/button">
+    app:layout_constraintBottom_toTopOf="@+id/ac_btnUpdate">
 </ListView>
 
     <LinearLayout
@@ -22,18 +22,20 @@ tools:context=".activity.ChaptersActivity">
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/ac_btnUpdate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="刷新" />
+            android:text="刷新"
+            tools:ignore="ButtonStyle" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/ac_btnSort"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="逆序" />
+            android:text="逆序"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 

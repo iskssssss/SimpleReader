@@ -1,7 +1,6 @@
 package com.xrzx.reader.view.adapter;
 
 import android.content.Context;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.xrzx.reader.R;
-import com.xrzx.reader.book.entity.Book;
+import com.xrzx.commonlibrary.entity.Book;
 
 import java.util.List;
 

@@ -5,21 +5,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
+import com.xrzx.commonlibrary.utils.ToastUtils;
+import com.xrzx.reader.GlobalData;
 import com.xrzx.reader.R;
 import com.xrzx.reader.activity.BookInfoActivity;
-import com.xrzx.reader.book.entity.Book;
+import com.xrzx.commonlibrary.entity.Book;
 import com.xrzx.reader.book.http.BookHttpApi;
-import com.xrzx.reader.common.callback.ResultCallBack;
-import com.xrzx.reader.common.utils.KeyboardUtils;
+import com.xrzx.commonlibrary.callback.ResultCallBack;
+import com.xrzx.commonlibrary.utils.KeyboardUtils;
+import com.xrzx.commonlibrary.utils.ThreadUtils;
 import com.xrzx.reader.view.adapter.SearchBookAdapter;
 
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.annotation.Nullable;
 
@@ -38,83 +42,121 @@ import okhttp3.FormBody;
  * @Author ks
  * @Date 2020/10/26 11:37
  */
-public class SearchFragment extends Fragment implements View.OnClickListener {
-    private final static ExecutorService executorService = Executors.newFixedThreadPool(1);
+public class SearchFragment extends Fragment {
+    private final static ExecutorService CRAWLING_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getCrawlingExecutorServiceThreadPool();
 
-    private EditText eTSearchByBookName;
-    private Button btnSearch;
-
-    private ListView listView;
-    private ArrayList<Book> titleList = new ArrayList<>();
+    private static final GlobalData GLOBAL_DATA = GlobalData.getInstance();
+    private EditText etSearchByBookName;
+    private ArrayList<Book> books;
     private SearchBookAdapter chapterAdapter;
+
+    /**
+     * 是否在搜索中
+     */
+    boolean isSearch = false;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        eTSearchByBookName = view.findViewById(R.id.eTSearchByBookName);
-        btnSearch = view.findViewById(R.id.btnSearch);
-        btnSearch.setOnClickListener(this);
-
-        listView = view.findViewById(R.id.listView);
-        chapterAdapter = new SearchBookAdapter(view.getContext(), R.layout.search_book_item, titleList);
+        // 初始化搜索结果书架
+        ListView listView = view.findViewById(R.id.listView);
+        books = new ArrayList<>();
+        chapterAdapter = new SearchBookAdapter(view.getContext(), R.layout.search_book_item, books);
         listView.setAdapter(chapterAdapter);
-        listView.setOnItemClickListener((parent, v, position, id) -> executorService.execute(() -> {
-            Book book = titleList.get(position);
+
+        // 搜索结果书架项点击监听
+        listView.setOnItemClickListener((parent, v, position, id) -> CRAWLING_EXECUTOR_SERVICE_THREAD_POOL.execute(() -> {
+            Book book = books.get(position);
+
+            final Book searchBook = GLOBAL_DATA.searchBook(book);
+            if (searchBook != null) {
+                GLOBAL_DATA.setCurrSelectBookAndPosition(searchBook, GLOBAL_DATA.getPosition(searchBook));
+                Intent intent = new Intent(view.getContext(), BookInfoActivity.class);
+                startActivity(intent);
+                return;
+            }
+
             BookHttpApi.getBookDetailsInfo(book, new ResultCallBack<Book>() {
                 @Override
                 public void onSuccess(Book result) {
+                    result.setBookShelf(false);
+                    GLOBAL_DATA.setCurrSelectBookAndPosition(result, -1);
                     Intent intent = new Intent(view.getContext(), BookInfoActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    intent.putExtra("book", book);
                     startActivity(intent);
                 }
 
                 @Override
                 public void onError(Exception e) {
                     e.printStackTrace();
+                    ToastUtils.show("选择失败，请重新尝试。");
                 }
             });
         }));
+
+        // 初始化搜索框
+        etSearchByBookName = view.findViewById(R.id.eTSearchByBookName);
+        etSearchByBookName.setOnEditorActionListener((v, actionId, event) -> {
+            boolean enter = actionId == EditorInfo.IME_ACTION_SEND || actionId == EditorInfo.IME_ACTION_DONE
+                    || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction());
+            if (enter) {
+                final FragmentActivity activity = this.getActivity();
+                if (null != activity) {
+                    KeyboardUtils.hideKeyboard(activity);
+                }
+                onClickBtnSearch(etSearchByBookName.getText().toString());
+            }
+            return false;
+        });
         return view;
     }
 
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnSearch:
-                onClickBtnSearch(v);
-                break;
-            default:
-                //TODO ...
-                break;
+    /**
+     * 搜索图书
+     *
+     * @param searchkey 关键字
+     */
+    private void onClickBtnSearch(String searchkey) {
+        if (isSearch) {
+            ToastUtils.show("正在搜索，请稍后。");
+            books.clear();
         }
-    }
-
-    private void onClickBtnSearch(View v) {
-        String searchkey = eTSearchByBookName.getText().toString();
         if ("".equals(searchkey)) {
+            ToastUtils.show("请输入搜索关键字");
             return;
         }
-        titleList.clear();
-        FormBody.Builder searchDict = new FormBody.Builder();
-        searchDict.add("searchkey", searchkey);
-        BookHttpApi.searchBooks(searchDict, titleList, new ResultCallBack<List<Book>>() {
-            @Override
-            public void onSuccess(List<Book> result) {
-                Message msg = Message.obtain();
-                msg.what = 1;
-                handler.sendMessage(msg);
-            }
+        isSearch = true;
+        books.clear();
+        ToastUtils.show("搜索中...");
+        CRAWLING_EXECUTOR_SERVICE_THREAD_POOL.submit(() -> {
+            FormBody.Builder searchDict = new FormBody.Builder();
+            searchDict.add("searchkey", searchkey);
+            BookHttpApi.searchBooks(searchDict, books, new ResultCallBack<List<Book>>() {
+                @Override
+                public void onSuccess(List<Book> result) {
+                    Message msg = Message.obtain();
+                    msg.what = 1;
+                    handler.sendMessage(msg);
+                }
 
-            @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
-            }
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                    ToastUtils.show("搜索失败，请重新尝试。");
+                }
+            });
         });
-        KeyboardUtils.hideKeyboard(this.getActivity());
+    }
+
+    @Override
+    public void onDestroy() {
+        books.clear();
+        chapterAdapter.clear();
+        books = null;
+        handler = null;
+        chapterAdapter = null;
+        super.onDestroy();
     }
 
     @SuppressLint("HandlerLeak")
@@ -122,16 +164,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         @Override
         public void handleMessage(@NotNull Message msg) {
             super.handleMessage(msg);
-            switch (msg.what) {
-                case 1:
-                    chapterAdapter.notifyDataSetChanged();
-                    break;
-                case 2:
-                    System.out.println("ss");
-                    break;
-                default:
-                    System.out.println("default");
-                    break;
+            if (msg.what == 1) {
+                isSearch = false;
+                chapterAdapter.notifyDataSetChanged();
+                ToastUtils.show("搜索完成，共搜寻到" + books.size() + "条书籍。");
             }
         }
     };

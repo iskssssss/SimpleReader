@@ -7,28 +7,50 @@
     android:background="#F4F4F4"
     tools:context=".activity.BookInfoActivity">
 
-    <ImageView
-        android:id="@+id/abi_iVCover"
-        android:layout_width="120dp"
-        android:layout_height="150dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/abi_iVCoverMain"
+        android:layout_width="105dp"
+        android:layout_height="140dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="32dp"
-        android:background="@drawable/cover"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="105dp"
+            android:layout_height="140dp"
+            android:layout_margin="6dp"
+            android:background="@android:drawable/dialog_holo_light_frame"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/abi_iVCover"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="7dp"
+            android:layout_marginBottom="7dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/cover" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/abi_tVName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:text="三寸人间"
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/abi_iVCover"
-        app:layout_constraintTop_toTopOf="@+id/abi_iVCover" />
+        app:layout_constraintStart_toEndOf="@+id/abi_iVCoverMain"
+        app:layout_constraintTop_toTopOf="@+id/abi_iVCoverMain" />
 
     <TextView
         android:id="@+id/abi_tVIntroduction"
@@ -36,13 +58,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:minHeight="64dp"
         android:text="举头三尺无神明，掌心三寸是人间。这是耳根继《仙逆》《求魔》《我欲封天》《一念永恒》后，创作的第五部长篇小说《三寸人间》。"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/abi_iVCover"
-        app:layout_constraintTop_toBottomOf="@+id/abi_iVCover" />
+        app:layout_constraintStart_toStartOf="@+id/abi_iVCoverMain"
+        app:layout_constraintTop_toBottomOf="@+id/abi_iVCoverMain" />
 
     <TextView
         android:id="@+id/abi_tVAuthor"
@@ -75,13 +96,12 @@
         app:layout_constraintTop_toBottomOf="@+id/abi_tVType" />
 
     <LinearLayout
+        android:id="@+id/abi_LLChapterItem"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -93,14 +113,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:text="目录"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/abi_tVLastUpdateChapter"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="第1154章 未央天道！" />
@@ -119,10 +139,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="18dp"
-            android:layout_marginLeft="18dp"
             android:layout_marginTop="9dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:layout_marginBottom="9dp"
             android:layout_weight="1"
             android:background="@drawable/default_style"
@@ -134,10 +152,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginTop="9dp"
             android:layout_marginEnd="18dp"
-            android:layout_marginRight="18dp"
             android:layout_marginBottom="9dp"
             android:layout_weight="1"
             android:background="@drawable/read_sow_style"

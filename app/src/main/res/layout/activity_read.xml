@@ -1,38 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="#CDDFCD"
+android:orientation="vertical"
+tools:context=".activity.ReadActivity">
+
+<!--<TextView
+    android:id="@+id/arn_tVTitle"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="3dp"
+    android:text="标题" />-->
+
+<com.xrzx.reader.view.custom.ChapterContentTextView
+    android:id="@+id/arn_tVContent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#CDDFCD"
-    android:orientation="vertical"
-    tools:context=".activity.ReadActivity">
+    android:layout_height="0dp"
+    android:layout_weight="1" />
 
-    <TextView
-        android:id="@+id/tV_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="3dp"
-        android:text="标题" />
+<!--<TextView
+    android:id="@+id/arn_tVSchedulePage"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:layout_marginLeft="20dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="8dp"
+    android:text="0/0" />-->
 
-    <ScrollView
-        android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:fastScrollEnabled="true"
-        android:overScrollMode="never"
-        android:scrollbars="none">
-
-        <TextView
-            android:id="@+id/tV_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="正文"
-            android:textSize="24sp" />
-    </ScrollView>
 </LinearLayout>
