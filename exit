@@ -1,0 +1,35 @@
+[33mcommit fac0dd2fb2b6ad0f991f8193c168131814c1e3c8[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: iskssssss <iskongsheng@foxmail.com>
+Date:   Fri Nov 6 11:36:41 2020 +0800
+
+    添加了本地数据存放，实现了书籍加入书架 移除书架，添加了阅读界面的设置。
+
+[33mcommit cffc19b6fe770bfe8ded65449f41209edb9e3ce0[m
+Author: iskssssss <iskongsheng@foxmail.com>
+Date:   Mon Oct 26 12:37:27 2020 +0800
+
+    修改了程序界面，整理了部分代码。
+
+[33mcommit 08a84c7730db7f78f1a80bda184ec7a0d1df8965[m
+Author: iskssssss <iskongsheng@foxmail.com>
+Date:   Mon Oct 26 12:26:54 2020 +0800
+
+    修改了程序界面，整理了部分代码。
+
+[33mcommit 1b73df552f020c7ed3ffbecc820ccd0d4b79758a[m
+Author: iskssssss <iskongsheng@foxmail.com>
+Date:   Wed Oct 21 13:10:05 2020 +0800
+
+    更新了软件的启动界面（添加了倒计时）
+
+[33mcommit e342268d04365b0c2d7d2e664466837eca4c4bff[m
+Author: iskssssss <53375843+iskssssss@users.noreply.github.com>
+Date:   Tue Oct 20 22:13:21 2020 +0800
+
+    Create README.md
+
+[33mcommit fbc6388bf800bdd2c8864b568b6bd6b41d3d51cd[m
+Author: iskssssss <iskongsheng@foxmail.com>
+Date:   Tue Oct 20 22:10:18 2020 +0800
+
+    初始版本

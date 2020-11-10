@@ -1,18 +1,28 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:fontFamily">@font/font_6</item>
     </style>
 
+    <style name="AppTextColor" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColor">@color/colorChapterDefault</item>
+        <item name="android:editTextColor">@color/colorChapterDefault</item>
+    </style>
 
-    <style name="PopWindowAnimStyle">
-<!--        <item name="android:windowShowAnimation">@anim/dialog_enter</item>-->
-        <!-- 指定显示的动画xml  -->
-<!--        <item name="android:windowHideAnimation">@anim/dialog_exit</item>-->
-        <!-- 指定消失的动画xml  -->
+    <style name="AppTitle" parent="AppTextColor">
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
+    <style name="AppMain" parent="AppTextColor">
+        <item name="android:background">@color/colorReadK61</item>
+    </style>
+
+    <style name="AppBottomMenuBar" parent="AppTextColor">
+        <item name="android:background">@color/colorReadSettingK61</item>
     </style>
 
     <style name="MyDialogStyle">
@@ -25,8 +35,6 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Translucent</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
-
-
 
     <style name="default_dialog_style">
         <!--<item name="android:windowIsFloating">true</item>-->

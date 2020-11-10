@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.ConnectionPool;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -33,10 +34,11 @@ public class HttpUtils {
         if (okHttpClient == null) {
             synchronized (OkHttpClient.class) {
                 if (okHttpClient == null) {
-                    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-                    builder.connectTimeout(30000, TimeUnit.SECONDS);
-                    builder.hostnameVerifier((hostname, session) -> true);
-                    okHttpClient = builder.build();
+                    okHttpClient = new OkHttpClient.Builder()
+                            .connectTimeout(30000, TimeUnit.SECONDS)
+                            .connectionPool(new ConnectionPool(12, 30, TimeUnit.SECONDS))
+                            .hostnameVerifier((hostname, session) -> true)
+                            .build();
                 }
             }
         }
@@ -51,8 +53,7 @@ public class HttpUtils {
      */
     public static void getRequestInputStreamByGet(final String url, final HttpCallBack<InputStream> callBack) {
         OkHttpClient client = HttpUtils.getOkHttpClient();
-        Request request = new Request.Builder()
-                .url(url).build();
+        Request request = new Request.Builder().url(url).build();
         try {
             try (Response re = client.newCall(request).execute();
                  ResponseBody body = re.body()) {

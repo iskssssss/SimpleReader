@@ -32,6 +32,15 @@ import static org.junit.Assert.*;
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
 
+    @Test
+    public void useAppContext2() {
+        // Context of the app under test.
+        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        assertEquals("com.xrzx.reader", appContext.getPackageName());
+
+
+    }
+
 
     @Test
     public void useAppContext() {

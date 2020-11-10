@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.xrzx.reader.R;
+import com.xrzx.reader.fragment.base.BaseFragment;
 
 import javax.annotation.Nullable;
 
@@ -17,23 +18,21 @@ import javax.annotation.Nullable;
  * @Author ks
  * @Date 2020/10/26 11:37
  */
-public class BaseTitleFragment extends Fragment {
+public class BaseTitleFragment extends BaseFragment {
 
-    private TextView btTVTitle;
+    private final String title;
+
+    public BaseTitleFragment(String title) {
+        this.title = title;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.base_title, container, false);
-        btTVTitle = view.findViewById(R.id.bt_tVTitle);
+        View view = inflater.inflate(R.layout.fragment_base_title, container, false);
+//        view.getContext().setTheme(R.style.AppTitle);
+        TextView tvTitle = view.findViewById(R.id.fbt_tv_title);
+        tvTitle.setText(title);
         return view;
-    }
-
-    public void setTitle(CharSequence title) {
-        btTVTitle.setText(title);
-    }
-
-    public String getTitle() {
-        return btTVTitle.getText().toString();
     }
 }

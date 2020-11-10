@@ -8,6 +8,7 @@ import com.xrzx.commonlibrary.database.dao.ChapterInfoDao;
 import com.xrzx.commonlibrary.entity.Chapter;
 import com.xrzx.commonlibrary.entity.FieldInfo;
 import com.xrzx.commonlibrary.enums.SQLiteDataType;
+import com.xrzx.commonlibrary.utils.ObjectUtils;
 import com.xrzx.commonlibrary.utils.SQLiteUtils;
 import com.xrzx.commonlibrary.database.dao.BookInfoDao;
 import com.xrzx.commonlibrary.database.helper.CustomDatabaseHelper;
@@ -35,11 +36,11 @@ public class BaseDao {
      * @param mClass 类
      * @return SQL语句
      */
-    protected static String getCreateSql(Class mClass) {
+    protected static String getCreateSql(String dbName,Class mClass) {
         List<Field> fields = SQLiteUtils.getSortFieldByOrder(mClass);
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE ");
-        sb.append(mClass.getSimpleName().toLowerCase());
+        sb.append(dbName);
         sb.append("\n(");
         for (Field field : fields) {
             final SQLiteAnnotation annotation = field.getAnnotation(SQLiteAnnotation.class);
@@ -67,47 +68,6 @@ public class BaseDao {
         return sb.toString();
     }
 
-    /**
-     * 获取类的基本信息
-     *
-     * @param mClass 类
-     * @return 信息
-     */
-    protected static HashMap<String, FieldInfo> getFieldInfo(Class mClass) {
-        HashMap<String, FieldInfo> fieldInfoHashMap = new HashMap<>(16);
-        final ArrayList<Method> setMethodList = SQLiteUtils.getMethodBySet(mClass);
-        final ArrayList<Method> getMethodList = SQLiteUtils.getMethodByGet(mClass);
-        final ArrayList<Field> fieldList = SQLiteUtils.getSortFieldByOrder(mClass);
-        for (Field field : fieldList) {
-            final String entityName = field.getName();
-            final String sqlName = SQLiteUtils.entityName2SqlName(entityName);
-            Method setMethod = null;
-            final Iterator<Method> setMethodListIterator = setMethodList.iterator();
-            while (setMethodListIterator.hasNext()) {
-                final Method next = setMethodListIterator.next();
-                if (next.getName().toLowerCase().contains("set" + entityName.toLowerCase())) {
-                    setMethod = next;
-                    setMethodListIterator.remove();
-                    break;
-                }
-            }
-            Method getMethod = null;
-            final Iterator<Method> getMethodListIterator = getMethodList.iterator();
-            while (getMethodListIterator.hasNext()) {
-                final Method next = getMethodListIterator.next();
-                if (next.getName().toLowerCase().contains("get" + entityName.toLowerCase())) {
-                    getMethod = next;
-                    getMethodListIterator.remove();
-                    break;
-                }
-            }
-            fieldInfoHashMap.put(sqlName, new FieldInfo(field, setMethod, getMethod));
-        }
-        setMethodList.clear();
-        getMethodList.clear();
-        fieldList.clear();
-        return fieldInfoHashMap;
-    }
 
     /**
      * 将数据写入实体中
@@ -118,7 +78,7 @@ public class BaseDao {
      * @return 结果
      */
     protected static boolean writeEntity(List<Object> objectList, Class mClass, Cursor cursor) {
-        final HashMap<String, FieldInfo> fieldInfoHashMap = getFieldInfo(mClass);
+        final HashMap<String, FieldInfo> fieldInfoHashMap = ObjectUtils.getFieldInfo(mClass , true);
         while (cursor.moveToNext()) {
             Object chapter;
             try {
@@ -129,7 +89,13 @@ public class BaseDao {
             }
             for (String columnName : cursor.getColumnNames()) {
                 final FieldInfo fieldInfo = fieldInfoHashMap.get(columnName);
+                if (null == fieldInfo) {
+                    continue;
+                }
                 final SQLiteAnnotation annotation = fieldInfo.getField().getAnnotation(SQLiteAnnotation.class);
+                if (null == annotation) {
+                    continue;
+                }
                 final SQLiteDataType sqLiteDataType = annotation.dataType();
                 try {
                     switch (sqLiteDataType) {
@@ -163,7 +129,7 @@ public class BaseDao {
      */
     public static ContentValues getContentValues(Class mClass, Object entity) {
         ContentValues contentValues = new ContentValues();
-        final HashMap<String, FieldInfo> fieldInfoHashMap = getFieldInfo(mClass);
+        final HashMap<String, FieldInfo> fieldInfoHashMap = ObjectUtils.getFieldInfo(mClass, true);
         for (String key : fieldInfoHashMap.keySet()) {
             final FieldInfo fieldInfo = fieldInfoHashMap.get(key);
             final Method getMethod = fieldInfo.getGetMethod();

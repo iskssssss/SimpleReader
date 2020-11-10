@@ -7,49 +7,40 @@
     android:layout_gravity="center_vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/drs_llTopMenu"
+        android:id="@+id/drs_ll_top_menu"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:layout_height="48dp"
+        android:background="@color/colorReadSettingK61"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/drs_tvBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="⇦"
-            android:textSize="24sp"
-            android:textStyle="bold"
+        <LinearLayout
+            android:id="@+id/drs_ll_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/back"
+                android:contentDescription="@string/btn_back_text" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/drs_tvMore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="┅"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/drs_tvChapterName"
+            android:id="@+id/drs_tv_chapter_name"
             android:layout_width="256dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
+            android:textColor="#000000"
             android:text="第七百六十七章 仙魔双子合一，同阶无敌"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -57,13 +48,31 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/drs_ll_more"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="5dp"
+                android:background="@drawable/img_more"
+                android:contentDescription="@string/btn_more_text" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
-        android:id="@+id/drs_llButtonMenu"
+        android:id="@+id/drs_ll_button_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorReadSettingK61"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -78,28 +87,30 @@
             android:paddingBottom="16dp">
 
             <TextView
-                android:id="@+id/drs_tvPrevChapter"
+                android:id="@+id/drs_tv_prev_chapter"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="24dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="center"
+                android:textColor="#000000"
                 android:text="上一章"
                 android:textSize="18sp" />
 
             <SeekBar
                 android:id="@+id/seekBar"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/drs_tvNextChapter"
+                android:id="@+id/drs_tv_next_chapter"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
                 android:gravity="center"
+                android:textColor="#000000"
                 android:text="下一章"
                 android:textSize="18sp" />
         </LinearLayout>
@@ -113,7 +124,7 @@
             android:paddingBottom="8dp">
 
             <LinearLayout
-                android:id="@+id/drs_llCatalogItem"
+                android:id="@+id/drs_ll_catalog_item"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -122,19 +133,21 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:id="@+id/drs_llCatalogItemImg"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:id="@+id/drs_ll_catalog_item_img"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     app:srcCompat="@drawable/book_shelf_default" />
 
                 <TextView
+                    android:id="@+id/drs_tv_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="目录" />
+                    android:text="目录"
+                    android:textColor="#000000" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/drs_llDownloadItem"
+                android:id="@+id/drs_ll_download_item"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -143,19 +156,21 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:id="@+id/drs_llDownloadItemImg"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:id="@+id/drs_ll_download_item_img"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     app:srcCompat="@drawable/book_shelf_default" />
 
                 <TextView
+                    android:id="@+id/drs_tv_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="缓存" />
+                    android:text="缓存"
+                    android:textColor="#000000" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/drs_llNightItem"
+                android:id="@+id/drs_ll_night_item"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -164,19 +179,21 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:id="@+id/drs_llNightItemImg"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:id="@+id/drs_ll_night_item_img"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     app:srcCompat="@drawable/book_shelf_default" />
 
                 <TextView
+                    android:id="@+id/drs_tv_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="夜间" />
+                    android:text="夜间"
+                    android:textColor="#000000" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/drs_llSettingItem"
+                android:id="@+id/drs_ll_setting_item"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -185,15 +202,17 @@
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:id="@+id/drs_llSettingItemImg"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:id="@+id/drs_ll_setting_item_img"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     app:srcCompat="@drawable/book_shelf_default" />
 
                 <TextView
+                    android:id="@+id/drs_tv_4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="设置" />
+                    android:text="设置"
+                    android:textColor="#000000" />
             </LinearLayout>
 
         </LinearLayout>

@@ -4,10 +4,9 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.xrzx.commonlibrary.entity.Chapter;
-import com.xrzx.commonlibrary.utils.SQLiteUtils;
-import com.xrzx.commonlibrary.entity.Book;
 import com.xrzx.commonlibrary.database.dao.base.BaseDao;
+import com.xrzx.commonlibrary.entity.Book;
+import com.xrzx.commonlibrary.utils.SQLiteUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class BookInfoDao extends BaseDao {
      * @param db
      */
     public static void onCreate(SQLiteDatabase db) {
-        db.execSQL(getCreateSql(Book.class));
+        db.execSQL(getCreateSql(TABLE_NAME, Book.class));
     }
 
     public static Book find(String selection, String... selectionVal) {
@@ -47,19 +46,35 @@ public class BookInfoDao extends BaseDao {
         return findAll(TABLE_NAME, COLUMNS, selection, selectionVal, null, null, null);
     }
 
+    /**
+     * 读取数据
+     *
+     * @param table         数据表
+     * @param columns       数据库列名
+     * @param selection     选择条件
+     * @param selectionArgs 选择条件的值
+     * @param groupBy       分组函数
+     * @param having        聚合函数
+     * @param orderBy       排序
+     * @return 数据列表
+     */
     public static ArrayList<Book> findAll(String table, String[] columns,
-                                     String selection, String[] selectionArgs,
-                                     String groupBy, String having, String orderBy) {
+                                          String selection, String[] selectionArgs,
+                                          String groupBy, String having, String orderBy) {
         ArrayList<Book> bookList = new ArrayList<>();
-        List<Object> objectList = new ArrayList<>();
         try (SQLiteDatabase db = CUSTOM_DATABASE_HELPER.getWritableDatabase()) {
             try (Cursor cursor = db.query(table, columns, selection, selectionArgs, groupBy, having, orderBy)) {
-                if (writeEntity(objectList, Book.class, cursor)) {
-                    for (Object o : objectList) {
-                        bookList.add((Book) o);
-                    }
-                    objectList.clear();
+                List<Object> objectList = new ArrayList<>();
+                if (!writeEntity(objectList, Book.class, cursor)) {
+                    return null;
                 }
+                objectList.forEach(book -> {
+                    final Book t = (Book) book;
+                    t.setBookShelf(true);
+                    t.setChapterList(new ArrayList<>());
+                    bookList.add(t);
+                });
+                objectList.clear();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,10 +95,10 @@ public class BookInfoDao extends BaseDao {
         return true;
     }
 
-    public static boolean writeEntity(List<Book> entitys) {
-        for (Book entity : entitys) {
+    public static boolean writeEntity(List<Book> books) {
+        for (Book entity : books) {
             try {
-                writeEntity(entity);
+                return writeEntity(entity);
             } catch (Exception e) {
                 e.printStackTrace();
             }

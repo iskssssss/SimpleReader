@@ -1,7 +1,12 @@
 package com.xrzx.reader.activity.base;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +15,7 @@ import com.xrzx.commonlibrary.database.dao.BookInfoDao;
 import com.xrzx.commonlibrary.database.dao.ChapterInfoDao;
 import com.xrzx.commonlibrary.entity.Book;
 import com.xrzx.commonlibrary.entity.Chapter;
+import com.xrzx.commonlibrary.entity.ReadPageSettingLog;
 import com.xrzx.commonlibrary.utils.AndroidUtils;
 import com.xrzx.commonlibrary.utils.ThreadUtils;
 import com.xrzx.commonlibrary.utils.ToastUtils;
@@ -17,7 +23,7 @@ import com.xrzx.reader.GlobalData;
 import com.xrzx.reader.book.http.BookHttpApi;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @Description
@@ -25,15 +31,28 @@ import java.util.concurrent.ExecutorService;
  * @Date 2020/10/29 22:25
  */
 public class BaseActivity extends AppCompatActivity {
-    protected final static ExecutorService OTHER_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getOtherExecutorServiceThreadPool();
-    protected final static ExecutorService CRAWLING_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getCrawlingExecutorServiceThreadPool();
+    protected final static ThreadPoolExecutor OTHER_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getOtherExecutorServiceThreadPool();
+    protected final static ThreadPoolExecutor CRAWLING_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getCrawlingExecutorServiceThreadPool();
     protected final static GlobalData GLOBAL_DATA = GlobalData.getInstance();
 
-    protected static Book book;
-    protected static ArrayList<Chapter> chapterList;
+    /**
+     * 阅读设置
+     */
+    protected static ReadPageSettingLog READ_PAGE_SETTING = null;
+
+    /**
+     * 当前阅读书籍
+     */
+    protected static Book currentBook;
+    /**
+     * 当前阅读的书籍目录
+     */
+    protected static ArrayList<Chapter> currentChapterList;
 
     protected static int width = -1;
     protected static int height = -1;
+
+    protected final static Book UPDATE_BOOK = new Book();
 
     /**
      * 预加载章节数（选择章节的前）
@@ -43,13 +62,14 @@ public class BaseActivity extends AppCompatActivity {
      * 预加载章节数（选择章节的后）
      */
     private static final int PRELOADED_CHAPTERS_NUMBER_AFTER = 3;
-
+    /**
+     * 在阅读界面进入目录时的判断代码
+     */
     protected static final int SELECT_CHAPTER_CODE = 1;
 
     protected Message getMessage(int what) {
         return getMessage(what, null);
     }
-
     protected Message getMessage(int what, Object obj) {
         Message msg = Message.obtain();
         msg.what = what;
@@ -58,28 +78,22 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     /**
-     * 获取书籍信息
-     *
-     * @return
+     * 设置当前查阅书籍信息
      */
-    protected void getBookInfo() {
+    protected void setCurrentBook() {
+        // 获取手机的宽高
         if (width == -1 || height == -1) {
             width = AndroidUtils.getWidth(this);
             height = AndroidUtils.getHeight(this);
         }
-
-        if (null != book && book.getbUniquelyIdentifies().equals(GLOBAL_DATA.getCurrSelectBook().getbUniquelyIdentifies())) {
-            return;
+        if (null != currentBook && currentBook.isBookShelf() && GLOBAL_DATA.getCurrSelectBook().isBookShelf()) {
+            if (currentBook.getbUniquelyIdentifies().equals(GLOBAL_DATA.getCurrSelectBook().getbUniquelyIdentifies())) {
+                return;
+            }
         }
-        book = GLOBAL_DATA.getCurrSelectBook();
-
-        if (null == book.getChapterList()) {
-            book.setChapterList(new ArrayList<>());
-        }
-        chapterList = book.getChapterList();
+        currentBook = GLOBAL_DATA.getCurrSelectBook();
+        currentChapterList = currentBook.getChapterList();
     }
-
-    Book updateBook = new Book();
 
     /**
      * 储存图书阅读信息
@@ -88,18 +102,18 @@ public class BaseActivity extends AppCompatActivity {
      * @param currentReadChapterPage 阅读章节页数
      */
     protected void updateReadingRecord(int currentReadChapterId, int currentReadChapterPage) {
-        book.setbCurrentReadChapterPage(currentReadChapterPage);
-        if (!book.isBookShelf()) {
+        currentBook.setbCurrentReadChapterPage(currentReadChapterPage);
+        if (!currentBook.isBookShelf()) {
             return;
         }
-        updateBook.setbUniquelyIdentifies(book.getbUniquelyIdentifies());
+        UPDATE_BOOK.setbUniquelyIdentifies(currentBook.getbUniquelyIdentifies());
         if (currentReadChapterId != -1) {
-            updateBook.setbCurrentReadChapterId(currentReadChapterId);
+            UPDATE_BOOK.setbCurrentReadChapterId(currentReadChapterId);
         }
-        updateBook.setbCurrentReadChapterPage(currentReadChapterPage);
-        BookInfoDao.updateBook(updateBook);
-        updateBook.setbCurrentReadChapterId(null);
-        updateBook.setbCurrentReadChapterPage(null);
+        UPDATE_BOOK.setbCurrentReadChapterPage(currentReadChapterPage);
+        BookInfoDao.updateBook(UPDATE_BOOK);
+        UPDATE_BOOK.setbCurrentReadChapterId(null);
+        UPDATE_BOOK.setbCurrentReadChapterPage(null);
     }
 
     /**
@@ -117,6 +131,7 @@ public class BaseActivity extends AppCompatActivity {
             public void onSuccess(ArrayList<Chapter> result) {
                 if (chapterList.size() == 0) {
                     chapterList.addAll(newChapterList);
+                    ChapterInfoDao.writeChapters(chapterList);
                 } else if (newChapterList.size() != chapterList.size()) {
                     for (int i = chapterList.size(); i < newChapterList.size(); i++) {
                         final Chapter chapter = newChapterList.get(i);
@@ -144,11 +159,9 @@ public class BaseActivity extends AppCompatActivity {
         }));
     }
 
-
     protected void getChapterContent(boolean headDraw, boolean thread) {
         getChapterContent(null, null, headDraw, thread);
     }
-
 
     /**
      * 获取章节正文内容
@@ -162,25 +175,25 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void getContent(Handler handler, Message message, boolean headDraw) {
-        final int currentReadChapterId = book.currentReadChapterIdIndex();
+        final int currentReadChapterId = currentBook.currentReadChapterIdIndex();
         int startIndex = currentReadChapterId - PRELOADED_CHAPTERS_NUMBER_BEFORE;
         int endIndex = currentReadChapterId + PRELOADED_CHAPTERS_NUMBER_AFTER;
         if (startIndex <= -1) {
             startIndex = currentReadChapterId;
         }
-        if (endIndex >= chapterList.size()) {
-            endIndex = chapterList.size() - 1;
+        if (endIndex >= currentChapterList.size()) {
+            endIndex = currentChapterList.size() - 1;
         }
         // 判断当前选择的章节内容是否为空  为空则获取内容
-        if (null == chapterList.get(currentReadChapterId).getcContent()) {
-            getContent(chapterList.get(currentReadChapterId));
+        if (null == currentChapterList.get(currentReadChapterId).getcContent()) {
+            getContent(currentChapterList.get(currentReadChapterId));
         }
         if (null != handler) {
             message.obj = headDraw;
             handler.sendMessage(message);
         }
         for (int i = startIndex; i <= endIndex; i++) {
-            Chapter chapter = chapterList.get(i);
+            Chapter chapter = currentChapterList.get(i);
             boolean isContinue = null != chapter.getcContent() && !"".equals(chapter.getcContent()) || i == currentReadChapterId;
             if (isContinue) {
                 continue;
@@ -189,21 +202,94 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 获取文章内容
+     *
+     * @param chapter 章节信息
+     */
     private void getContent(final Chapter chapter) {
         BookHttpApi.getBookChapterContent(chapter, new ResultCallBack<String>() {
             @Override
             public void onSuccess(String result) {
                 chapter.setcContent(result);
-                if (book.isBookShelf()) {
+                // 如果当前书籍在书架的话 更新当前章节的信息
+                if (currentBook.isBookShelf()) {
                     ChapterInfoDao.updateChapterContent(String.valueOf(chapter.getcId()), result);
                 }
             }
 
             @Override
             public void onError(Exception e) {
-                ToastUtils.show("[" + chapter.getcTitle() + "]内容获取失败。");
+                ToastUtils.show("[" + chapter.getcTitle() + "] 内容获取失败。");
                 e.printStackTrace();
             }
         });
+    }
+
+
+    /**
+     * 系统亮度
+     */
+    private static int systemBrightness = -1;
+
+
+    /**
+     * 设置屏幕亮度
+     *
+     * @param brightness        亮度
+     */
+    public void setBrightness(Window window, float brightness) {
+        WindowManager.LayoutParams lp = window.getAttributes();
+        if (brightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE) {
+            lp.screenBrightness = brightness;
+        } else {
+            lp.screenBrightness = brightness * (1f / 255f);
+        }
+        getWindow().setAttributes(lp);
+    }
+
+    /**
+     * 获取屏幕亮度
+     *
+     * @return 亮度
+     */
+    public int getScreenBrightness(ContentResolver cr) {
+        try {
+            return Settings.System.getInt(cr, Settings.System.SCREEN_BRIGHTNESS);
+        } catch (Settings.SettingNotFoundException e) {
+            return 0;
+        }
+    }
+
+    /**
+     * 是否开启自动亮度
+     *
+     * @return
+     */
+    public boolean isAutoBrightness(ContentResolver cr) {
+        try {
+            return Settings.System.getInt(cr, Settings.System.SCREEN_BRIGHTNESS_MODE) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 开启自动亮度
+     */
+    public void autoBrightness(Context context, ContentResolver cr) {
+        if (Settings.System.canWrite(context)) {
+            Settings.System.putInt(cr, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
+        }
+    }
+
+    /**
+     * 关闭自动亮度
+     */
+    public void stopBrightness(Context context, ContentResolver cr) {
+        if (Settings.System.canWrite(context)) {
+            Settings.System.putInt(cr, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+        }
     }
 }

@@ -2,15 +2,22 @@ package com.xrzx.reader.view.custom;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.os.BatteryManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
 import com.xrzx.commonlibrary.callback.ResultCallBack;
+import com.xrzx.commonlibrary.entity.Book;
+import com.xrzx.commonlibrary.entity.Chapter;
 import com.xrzx.commonlibrary.utils.AndroidUtils;
+import com.xrzx.commonlibrary.utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,13 +39,29 @@ public class ChapterContentTextView extends View {
      */
     private final Paint otherPaint;
 
+    public void setPaintColor(int color) {
+        mainPaint.setColor(color);
+        otherPaint.setColor(color);
+        postInvalidate();
+    }
+
+    private Typeface typeface;
+
+    public void setTypeface(Typeface typeface) {
+        this.typeface = typeface;
+        mainPaint.setTypeface(typeface);
+        otherPaint.setTypeface(typeface);
+        postInvalidate();
+    }
+
     /**
      * 字体大小
      */
-    private float fontSize = AndroidUtils.sp2px(getContext(), 32);
+    private float fontSize = AndroidUtils.sp2px(getContext(), 16);
 
-    public void setFontSize(float fontSize) {
-        this.fontSize = AndroidUtils.sp2px(getContext(), fontSize);
+    public void setFontSize(int fontSize) {
+        this.fontSize = AndroidUtils.sp2px(getContext(), (float) fontSize);
+        this.contents.clear();
     }
 
     /**
@@ -46,8 +69,9 @@ public class ChapterContentTextView extends View {
      */
     private float rowSpacing = AndroidUtils.sp2px(getContext(), 12);
 
-    public void setRowSpacing(float rowSpacing) {
-        this.rowSpacing = AndroidUtils.sp2px(getContext(), rowSpacing);
+    public void setRowSpacing(int rowSpacing) {
+        this.rowSpacing = AndroidUtils.sp2px(getContext(), (float) rowSpacing);
+        this.contents.clear();
     }
 
     /**
@@ -55,8 +79,9 @@ public class ChapterContentTextView extends View {
      */
     private float pageSpacing = AndroidUtils.sp2px(getContext(), 24);
 
-    public void setPageSpacing(float pageSpacing) {
-        this.pageSpacing = AndroidUtils.sp2px(getContext(), pageSpacing);
+    public void setPageSpacing(int pageSpacing) {
+        this.pageSpacing = AndroidUtils.sp2px(getContext(), (float) pageSpacing);
+        this.contents.clear();
     }
 
     /**
@@ -72,11 +97,11 @@ public class ChapterContentTextView extends View {
     /**
      * 文章标题
      */
-    private String title;
+    private Book book;
     /**
      * 文章内容
      */
-    private String content;
+    private Chapter chapter;
     /**
      * 文章分段内容
      */
@@ -140,6 +165,10 @@ public class ChapterContentTextView extends View {
      */
     private boolean drawContentInfo = false;
 
+    public boolean isDrawContentInfo() {
+        return drawContentInfo;
+    }
+
     public void startDrawContentInfo() {
         this.drawContentInfo = true;
         invalidate();
@@ -155,11 +184,13 @@ public class ChapterContentTextView extends View {
     private boolean drawLoadingInfo = false;
 
     private String messageOne = "章节信息";
+
     public void setMessageOne(String messageOne) {
         this.messageOne = messageOne;
     }
 
     private String messageTwo = "加载中...";
+
     public void setMessageTwo(String messageTwo) {
         this.messageTwo = messageTwo;
     }
@@ -227,49 +258,49 @@ public class ChapterContentTextView extends View {
     }
 
     /**
-     * 设置文章标题
+     * 设置书籍信息
      *
-     * @param title 标题
+     * @param book 书籍
      */
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(Book book) {
+        this.book = book;
     }
 
     /**
      * 设置内容
      *
-     * @param content 文章内容
+     * @param chapter 文章内容
      */
-    public void setChapterInfo(String title, String content) {
-        setChapterInfo(title, content, 1, false, true);
+    public void setChapterInfo(Book book, Chapter chapter) {
+        setChapterInfo(book, chapter, 1, false, true);
     }
 
     /**
      * 设置内容(立刻绘制 并从头部开始绘制)
      *
-     * @param content 文章内容
+     * @param chapter 文章内容
      */
-    public void setChapterInfo(String title, String content, int currentPage) {
-        setChapterInfo(title, content, currentPage, true, true);
+    public void setChapterInfo(Book book, Chapter chapter, int currentPage) {
+        setChapterInfo(book, chapter, currentPage, true, true);
     }
 
     /**
      * 设置内容
      *
-     * @param content 文章内容
+     * @param chapter 文章内容
      */
-    public void setChapterInfo(String title, String content, boolean invalidate) {
-        setChapterInfo(title, content, 1, invalidate, true);
+    public void setChapterInfo(Book book, Chapter chapter, boolean invalidate) {
+        setChapterInfo(book, chapter, 1, invalidate, true);
     }
 
     /**
      * 设置内容
      *
-     * @param content 文章内容
+     * @param chapter 文章内容
      */
-    public void setChapterInfo(String title, String content, int currentPage, boolean invalidate, boolean headDraw) {
-        this.title = title;
-        this.content = content;
+    public void setChapterInfo(Book book, Chapter chapter, int currentPage, boolean invalidate, boolean headDraw) {
+        this.book = book;
+        this.chapter = chapter;
         this.headDraw = headDraw;
         this.currentPage = currentPage;
         this.contents.clear();
@@ -283,16 +314,16 @@ public class ChapterContentTextView extends View {
         super.onDraw(canvas);
         if (this.drawLoadingInfo) {
             drawLoadingInfo(canvas);
+            return;
         }
         if (this.drawContentInfo) {
             if (contents.isEmpty()) {
-                initParams();
-                contentStr2List();
-                if (!headDraw) {
-                    currentPage = totalPages;
-                }
-                if (null != callBack) {
-                    callBack.onSuccess(null);
+                try {
+                    initParams();
+                    contentStr2List();
+                    currentPage = headDraw ? 1 : totalPages;
+                } catch (Exception e) {
+                    return;
                 }
             }
             drawChapterInfo(canvas);
@@ -330,7 +361,7 @@ public class ChapterContentTextView extends View {
      * @param style    其他样式(斜体，粗体)
      */
     private void setOtherPaintInfo(Paint.Align align, int textSize, int style) {
-        otherPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, style));
+        otherPaint.setTypeface(Typeface.create(typeface, style));
         otherPaint.setTextAlign(align);
         otherPaint.setTextSize(textSize);
     }
@@ -345,21 +376,65 @@ public class ChapterContentTextView extends View {
         int textSize = AndroidUtils.sp2px(getContext(), 12);
         setOtherPaintInfo(Paint.Align.LEFT, textSize, Typeface.BOLD);
 
+        canvas.drawText(currentPage == 1 ? book.getbName() : chapter.getcTitle(),
+                pageSpacing,
+                (topSpacing / 2f) + (textSize / 2f),
+                otherPaint);
+
         canvas.drawText(currentPage + "/" + totalPages,
                 pageSpacing,
                 loadHeight - (buttonSpacing / 2f) + (textSize / 2f),
                 otherPaint);
+        drawBatteryAndTime(canvas);
+    }
 
-        canvas.drawText(title,
-                pageSpacing,
-                (topSpacing / 2f) + (textSize / 2f),
-                otherPaint);
+    int currentLevel;
+    String dateTime;
+    public void setBatteryAndTime(int currentLevel, String dateTime){
+        this.currentLevel = currentLevel;
+        this.dateTime = dateTime;
+        postInvalidate();
+    }
+
+    private void  drawBatteryAndTime(Canvas canvas) {
+        float loadHeight = getHeight();
+        int textSize = AndroidUtils.sp2px(getContext(), 12);
+        setOtherPaintInfo(Paint.Align.RIGHT, textSize, Typeface.BOLD);
+
+        float x = width + pageSpacing - 6f;
+        float y = loadHeight - (buttonSpacing / 2f) + (textSize / 2f) + 4f;
+        float h = (float) textSize;
+        float w = AndroidUtils.sp2px(getContext(), 32f);
+        float bW = AndroidUtils.sp2px(getContext(), 3f);
+
+        //绘制电池边框
+        RectF re1 = new RectF(x, y - h, x - w, y);
+        otherPaint.setStyle(Paint.Style.STROKE);
+        otherPaint.setStrokeWidth(1.5f);
+        canvas.drawRect(re1, otherPaint);
+
+        // 绘制电池正极
+        RectF re2 = new RectF(x + bW, (y - h) + (bW / 2), x, y - (bW / 2));
+        otherPaint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(re2, otherPaint);
+
+        // 绘制当前时间
+        y -= 3f;
+        otherPaint.setStrokeWidth(1f);
+        otherPaint.setStyle(Paint.Style.FILL);
+        canvas.drawText(dateTime, x - (w + 4f), y, otherPaint);
+
+        // 绘制电池容量
+        x -= (w / 2);
+        setOtherPaintInfo(Paint.Align.CENTER, textSize, Typeface.BOLD);
+        canvas.drawText(currentLevel + "%", x, y, otherPaint);
     }
 
     /**
      * 将内容分段存储
      */
     public void contentStr2List() {
+        String content = chapter.getcTitle() + "\n" + chapter.getcContent();
         String[] paragraphs = content.split("\n");
         for (int i = 0; i < paragraphs.length; i++) {
             String paragraph = paragraphs[i];
@@ -375,7 +450,13 @@ public class ChapterContentTextView extends View {
                 }
                 int beginIndex = (r * rowWordCount);
                 int endIndex = beginIndex + printWordCount;
-                rowContentList.add(paragraph.substring(beginIndex, endIndex));
+                final String str = paragraph.substring(beginIndex, endIndex);
+                if ("".equals(str) || " ".equals(str)) {
+                    --totalRowCount;
+                    paragraphLen -= rowWordCount;
+                    continue;
+                }
+                rowContentList.add(str);
                 paragraphLen -= rowWordCount;
             }
         }
@@ -389,6 +470,7 @@ public class ChapterContentTextView extends View {
         width = getWidth() - (pageSpacing * 2);
         height = getHeight() - topSpacing - buttonSpacing;
         mainPaint.setTextSize(fontSize);
+
         fontHeight = fontSize + rowSpacing;
         rowWordCount = (int) (width / fontSize);
         colCount = (int) (height / fontHeight);
@@ -412,7 +494,8 @@ public class ChapterContentTextView extends View {
         if (currentPage > totalPages) {
             currentPage = totalPages;
         }
-        int endPrintRow = currentPage >= totalPages ? totalRowCount : currentPage * colCount;
+
+        int endPrintRow = (currentPage >= totalPages) ? totalRowCount : (currentPage * colCount);
         int sum = 0;
         int key = 1;
         int pages = 1;
@@ -441,8 +524,10 @@ public class ChapterContentTextView extends View {
             endKey--;
         }
 
-        for (key = startKey; key <= endKey; key++) {
-            ArrayList<String> rowContentList = contents.get(key);
+        // 打印文章
+        for (int k = startKey; k <= endKey; k++, startPrintParagraphRow = 0) {
+            ArrayList<String> rowContentList = contents.get(k);
+            mainPaint.setTypeface(Typeface.create(typeface, (k == 1) ? Typeface.BOLD : Typeface.NORMAL));
             if (null == rowContentList) {
                 continue;
             }
@@ -463,7 +548,6 @@ public class ChapterContentTextView extends View {
                 break;
             }
             y += (((height - (colCount * fontHeight)) + rowSpacing) / (endPrintParagraph - startPrintParagraph + 1));
-            startPrintParagraphRow = 0;
         }
     }
 

@@ -19,13 +19,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.xrzx.reader.R;
-import com.xrzx.commonlibrary.utils.DateUtils;
 import com.xrzx.commonlibrary.utils.ThreadUtils;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDateTime;
-import java.util.concurrent.ExecutorService;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -37,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class StartActivity extends AppCompatActivity implements View.OnClickListener {
 
 
-    private final static ExecutorService OTHER_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getOtherExecutorServiceThreadPool();
+    private final static ThreadPoolExecutor OTHER_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getOtherExecutorServiceThreadPool();
     private final static AtomicBoolean next = new AtomicBoolean(false);
     private TextView asTVCountdown;
 
@@ -88,28 +89,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         StartActivity.this.finish();
     }
 
-    Dialog dialog = null;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            System.out.println("Main - public boolean onTouchEvent(MotionEvent event)");
-            if (dialog == null){
-                dialog = new Dialog(this, R.style.default_dialog_style);
-                final View view = LayoutInflater.from(this).inflate(R.layout.dialog_read_setting, null);
-                dialog.setContentView(view);
-                Window window = dialog.getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                view.setOnTouchListener((v, e) -> {
-                    System.out.println("dialog - public boolean onTouchEvent(MotionEvent event)");
-                    dialog.dismiss();
-                    return false;
-                });
-                dialog.setCancelable(true);
-                dialog.setCanceledOnTouchOutside(true);
-            }
-            dialog.show();
+//            showDialogReadContentSetting();
         }
         return super.onTouchEvent(event);
     }

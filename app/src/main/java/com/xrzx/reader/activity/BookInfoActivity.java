@@ -2,6 +2,7 @@ package com.xrzx.reader.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,16 +26,13 @@ import com.xrzx.commonlibrary.utils.ToastUtils;
 public class BookInfoActivity extends BaseActivity implements View.OnClickListener {
 
     private Button btnAddBookshelf;
-    private Button btnReadNow;
 
-    private ImageView iVCover;
-    private TextView tVName;
-    private TextView tVAuthor;
-    private TextView tVType;
-    private TextView tVLastUpdateTime;
-    private TextView tVIntroduction;
-    private TextView tVLastUpdateChapter;
-    private LinearLayout lLChapterItem;
+    private TextView tvName;
+    private TextView tvAuthor;
+    private TextView tvType;
+    private TextView tvLastUpdateTime;
+    private TextView tvIntroduction;
+    private TextView tvLastUpdateChapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,57 +40,62 @@ public class BookInfoActivity extends BaseActivity implements View.OnClickListen
         setContentView(R.layout.activity_book_info);
 
         initView();
-        getBookInfo();
-        if (book.isBookShelf()) {
-            book.setBookShelf(true);
+        setCurrentBook();
+        if (currentBook.isBookShelf()) {
             btnAddBookshelf.setText(getString(R.string.remove_bookshelf_str));
         }
-        tVName.setText(book.getbName());
-        tVAuthor.setText(book.getbAuthor());
-        tVType.setText(book.getbType());
-        tVLastUpdateTime.setText(book.getbLastUpdateTime());
-        tVIntroduction.setText(book.getbIntroduction());
-        tVLastUpdateChapter.setText(book.getbLastUpdateChapter());
+        tvName.setText(currentBook.getbName());
+        tvAuthor.setText(currentBook.getbAuthor());
+        tvType.setText(currentBook.getbType());
+        tvLastUpdateTime.setText(currentBook.getbLastUpdateTime());
+        tvIntroduction.setText(currentBook.getbIntroduction());
+        tvLastUpdateChapter.setText(currentBook.getbLastUpdateChapter());
     }
 
     /**
      * 初始化控件
      */
     private void initView() {
-
-        btnAddBookshelf = findViewById(R.id.abi_btnAddBookshelf);
+        findViewById(R.id.abi_ll_back).setOnClickListener(this);
+        findViewById(R.id.abi_ll_more).setOnClickListener(this);
+        findViewById(R.id.abi_btn_read_now).setOnClickListener(this);
+        btnAddBookshelf = findViewById(R.id.abi_btn_add_book_shelf);
         btnAddBookshelf.setOnClickListener(this);
-        btnReadNow = findViewById(R.id.abi_btnReadNow);
-        btnReadNow.setOnClickListener(this);
 
-        lLChapterItem = findViewById(R.id.abi_LLChapterItem);
-        lLChapterItem.setOnClickListener(this);
+        LinearLayout llChapterItem = findViewById(R.id.abi_ll_chapterItem);
+        llChapterItem.setOnClickListener(this);
 
-        iVCover = findViewById(R.id.abi_iVCover);
-        iVCover.setBackgroundResource(R.drawable.cover);
-        tVName = findViewById(R.id.abi_tVName);
-        tVAuthor = findViewById(R.id.abi_tVAuthor);
-        tVType = findViewById(R.id.abi_tVType);
-        tVLastUpdateTime = findViewById(R.id.abi_tVLastUpdateTime);
-        tVIntroduction = findViewById(R.id.abi_tVIntroduction);
-        tVLastUpdateChapter = findViewById(R.id.abi_tVLastUpdateChapter);
+        ImageView ivCover = findViewById(R.id.abi_iv_cover);
+        ivCover.setBackgroundResource(R.drawable.cover);
+        tvName = findViewById(R.id.abi_tv_name);
+        tvAuthor = findViewById(R.id.abi_tv_author);
+        tvType = findViewById(R.id.abi_tv_type);
+        tvLastUpdateTime = findViewById(R.id.abi_tv_last_update_time);
+        tvIntroduction = findViewById(R.id.abi_tv_introduction);
+        tvLastUpdateChapter = findViewById(R.id.abi_tv_last_update_chapter_title);
     }
 
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.abi_btnAddBookshelf:
+            case R.id.abi_btn_add_book_shelf:
                 onClickBtnAddBookShelf(v);
                 break;
-            case R.id.abi_btnReadNow:
+            case R.id.abi_btn_read_now:
                 onClickBtnReadNow(v);
                 break;
-            case R.id.abi_LLChapterItem:
+            case R.id.abi_ll_chapterItem:
                 onClickLlChapterItem(v);
                 break;
+            case R.id.abi_ll_back:
+                BookInfoActivity.this.finish();
+                break;
+            case R.id.abi_ll_more:
+                ToastUtils.show("更多");
+                break;
             default:
-                //TODO ...
+                // TODO...
                 break;
         }
     }
@@ -113,12 +116,11 @@ public class BookInfoActivity extends BaseActivity implements View.OnClickListen
      * @param v View
      */
     private void onClickBtnReadNow(View v) {
-
         // 更新书籍阅读时间
-        book.setbNewReadTime(DateUtils.getDateTime());
-        if (book.isBookShelf()) {
+        currentBook.setbNewReadTime(DateUtils.getDateTime());
+        if (currentBook.isBookShelf()) {
             GLOBAL_DATA.putBookFirst();
-            BookInfoDao.updateBook(new Book(book.getbUniquelyIdentifies(), book.getbNewReadTime()));
+            BookInfoDao.updateBook(new Book(currentBook.getbUniquelyIdentifies(), currentBook.getbNewReadTime()));
         }
 
         Intent intent = new Intent(BookInfoActivity.this, ReadActivity.class);
@@ -132,10 +134,10 @@ public class BookInfoActivity extends BaseActivity implements View.OnClickListen
      */
     private void onClickBtnAddBookShelf(View v) {
         if (getString(R.string.add_bookshelf_str).contentEquals(btnAddBookshelf.getText())) {
-            GLOBAL_DATA.putBook(book);
+            GLOBAL_DATA.putBook(currentBook);
             setBtnAddBookShelfStyle("加入成功.", getString(R.string.remove_bookshelf_str));
         } else {
-            GLOBAL_DATA.removeBook(book);
+            GLOBAL_DATA.removeBook(currentBook);
             setBtnAddBookShelfStyle("移除成功.", getString(R.string.add_bookshelf_str));
         }
     }
@@ -148,7 +150,7 @@ public class BookInfoActivity extends BaseActivity implements View.OnClickListen
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            GLOBAL_DATA.removeSelectBook();
+//            GLOBAL_DATA.removeSelectBook();
             BookInfoActivity.this.finish();
         }
         return super.onKeyDown(keyCode, event);

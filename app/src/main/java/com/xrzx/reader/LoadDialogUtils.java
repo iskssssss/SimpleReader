@@ -50,7 +50,7 @@ public class LoadDialogUtils {
         lp.height = WindowManager.LayoutParams.MATCH_PARENT;
         window.setGravity(Gravity.CENTER);
         window.setAttributes(lp);
-        window.setWindowAnimations(R.style.PopWindowAnimStyle);
+//        window.setWindowAnimations(R.style.PopWindowAnimStyle);
         dialog.show();
         return dialog;
     }

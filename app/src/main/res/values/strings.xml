@@ -1,8 +1,14 @@
 <resources>
-    <string name="app_name">Reader</string>
+    <string name="app_name">简单阅读器</string>
     <string name="delimiter">◦</string>
-    <string name="search_str">搜索</string>
-    <string name="bookshelf_str">书架</string>
+    <string name="main_tv_text_search">搜索</string>
+    <string name="main_tv_text_bookshelf_str">书架</string>
     <string name="add_bookshelf_str">加入书架</string>
     <string name="remove_bookshelf_str">已在书架</string>
+    <string name="search_et_hint">书名/作者</string>
+    <string name="btn_back_text">&#160;⇦&#160;</string>
+    <string name="btn_more_text">&#160;┅&#160;</string>
+    <string name="cover_picture">书籍封面图</string>
+    <string name="charters_text">目录</string>
+    <string name="read_now">立即阅读</string>
 </resources>

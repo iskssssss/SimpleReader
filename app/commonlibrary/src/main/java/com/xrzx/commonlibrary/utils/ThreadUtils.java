@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ThreadUtils {
 
-    private static volatile ExecutorService crawlingExecutorServiceThreadPool = null;
+    private static volatile ThreadPoolExecutor crawlingExecutorServiceThreadPool = null;
 
-    private static volatile ExecutorService otherExecutorServiceThreadPool = null;
+    private static volatile ThreadPoolExecutor otherExecutorServiceThreadPool = null;
 
     /**
      * 获取线程池
@@ -25,7 +25,7 @@ public class ThreadUtils {
      * @param nThreads 线程数
      * @return ExecutorService
      */
-    private static ExecutorService newFixedThreadPool(int nThreads) {
+    private static ThreadPoolExecutor newFixedThreadPool(int nThreads) {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("demo-pool-%d").build();
         return new ThreadPoolExecutor(nThreads, nThreads,
@@ -38,9 +38,9 @@ public class ThreadUtils {
      *
      * @return
      */
-    public static ExecutorService getCrawlingExecutorServiceThreadPool() {
+    public static ThreadPoolExecutor getCrawlingExecutorServiceThreadPool() {
         if (null == crawlingExecutorServiceThreadPool) {
-            synchronized (ExecutorService.class) {
+            synchronized (ThreadPoolExecutor.class) {
                 if (null == crawlingExecutorServiceThreadPool) {
                     crawlingExecutorServiceThreadPool = newFixedThreadPool(6);
                 }
@@ -55,7 +55,7 @@ public class ThreadUtils {
      *
      * @return
      */
-    public static ExecutorService getOtherExecutorServiceThreadPool() {
+    public static ThreadPoolExecutor getOtherExecutorServiceThreadPool() {
         if (null == otherExecutorServiceThreadPool) {
             synchronized (ExecutorService.class) {
                 if (null == otherExecutorServiceThreadPool) {

@@ -2,38 +2,40 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/AppMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/am_vPTitle"
+    <com.xrzx.reader.view.custom.TitleViewPager
+        android:id="@+id/am_tvp_title"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/am_vPMain"
+        android:id="@+id/am_vp_main"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/am_lLButtonMenu"
+        app:layout_constraintBottom_toTopOf="@+id/am_ll_bottom_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/am_vPTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/am_tvp_title" />
 
     <LinearLayout
-        android:id="@+id/am_lLButtonMenu"
+        android:id="@+id/am_ll_bottom_menu"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="48dp"
         android:baselineAligned="false"
         android:orientation="horizontal"
+        android:theme="@style/AppBottomMenuBar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
-            android:id="@+id/am_lLBookShelfItem"
+            android:id="@+id/am_ll_book_shelf_item"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -42,19 +44,20 @@
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:id="@+id/am_lLBookShelfItemImg"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:id="@+id/am_ll_book_shelf_item_img"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/main_tv_text_bookshelf_str"
                 app:srcCompat="@drawable/book_shelf_default" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="书架" />
+                android:text="@string/main_tv_text_bookshelf_str" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/am_lLBookSearchItem"
+            android:id="@+id/am_ll_book_search_item"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -63,15 +66,16 @@
             tools:ignore="UseCompoundDrawables">
 
             <ImageView
-                android:id="@+id/am_lLBookSearchItemImg"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:id="@+id/am_ll_book_search_item_img"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/main_tv_text_search"
                 app:srcCompat="@drawable/search_default" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="搜索" />
+                android:text="@string/main_tv_text_search" />
         </LinearLayout>
     </LinearLayout>
 

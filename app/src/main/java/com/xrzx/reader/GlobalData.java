@@ -31,7 +31,6 @@ public class GlobalData {
         bookShelfList = new ArrayList<>();
     }
 
-
     /**
      * 书架适配器
      */
@@ -87,12 +86,22 @@ public class GlobalData {
         return bookShelfList.indexOf(book);
     }
 
+    /**
+     * 将书籍添加至书架
+     *
+     * @param book 被添加书籍
+     */
     public void putBook(Book book) {
         if (null == book) {
             return;
         }
+        // 设置书籍的唯一标识
+        book.setbUniquelyIdentifies(BookInfoDao.getUniquelyIdentifies());
+        // 设置最后阅读时间
         book.setbNewReadTime(DateUtils.getDateTime());
+        // 章节列表初始化
         book.setChapterList(new ArrayList<>());
+        // 修改为在书架
         book.setBookShelf(true);
         BookInfoDao.writeEntity(book);
         bookShelfList.add(0, book);
@@ -100,6 +109,11 @@ public class GlobalData {
         notifyDataSetChanged();
     }
 
+    /**
+     * 将书籍移除书架
+     *
+     * @param position 被移除书籍在书架的位置
+     */
     public void removeBook(int position) {
         if (position < 0 || position > (bookShelfList.size() - 1)) {
             return;
@@ -108,6 +122,11 @@ public class GlobalData {
         removeBook(book);
     }
 
+    /**
+     * 将书籍移除书架
+     *
+     * @param book 被移除书籍
+     */
     public void removeBook(Book book) {
         if (null == book) {
             return;
@@ -118,23 +137,29 @@ public class GlobalData {
             book.getChapterList().clear();
             book.setChapterList(null);
         }
+        book.setbUniquelyIdentifies(null);
         book.setBookShelf(false);
         removeSelectBook();
         bookShelfList.remove(book);
         notifyDataSetChanged();
     }
 
+    /**
+     * 设置书架书籍信息
+     *
+     * @param bookShelfList 书籍列表
+     */
     public void setBookShelfList(ArrayList<Book> bookShelfList) {
         this.bookShelfList.clear();
-        // 将书籍设置为在书架 和 实例化章节列表
-        bookShelfList.forEach(book -> {
-            book.setBookShelf(true);
-            book.setChapterList(new ArrayList<>());
-        });
         this.bookShelfList.addAll(bookShelfList);
         notifyDataSetChanged();
     }
 
+    /**
+     * 获取书架书籍信息
+     *
+     * @return 书籍信息
+     */
     public ArrayList<Book> getBookShelfList() {
         return bookShelfList;
     }
@@ -204,6 +229,9 @@ public class GlobalData {
         this.putBookFirst();
     }
 
+    /**
+     * 清除当前选择书籍
+     */
     public void removeSelectBook() {
         this.currSelectBook = null;
         this.currSelectPosition = -1;

@@ -6,4 +6,8 @@
 
     <color name="colorChapterDefault">#000000</color>
     <color name="colorChapterSelect">#FA7298</color>
+
+    <color name="colorReadFontColorBlack">#000000</color>
+    <color name="colorReadFontColorWhite">#B2F1F1F1</color>
+
 </resources>

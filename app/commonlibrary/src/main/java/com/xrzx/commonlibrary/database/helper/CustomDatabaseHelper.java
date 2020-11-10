@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.xrzx.commonlibrary.database.dao.BookInfoDao;
 import com.xrzx.commonlibrary.database.dao.ChapterInfoDao;
+import com.xrzx.commonlibrary.database.dao.ReadPageSettingDao;
 
 /**
  * @Description 数据库操作
@@ -43,6 +44,7 @@ public class CustomDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         BookInfoDao.onCreate(db);
         ChapterInfoDao.onCreate(db);
+        ReadPageSettingDao.onCreate(db);
     }
 
     @Override

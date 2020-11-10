@@ -28,7 +28,7 @@ public class ChapterInfoDao extends BaseDao {
      * @param db
      */
     public static void onCreate(SQLiteDatabase db) {
-        db.execSQL(getCreateSql(Chapter.class));
+        db.execSQL(getCreateSql(TABLE_NAME, Chapter.class));
     }
 
     /**

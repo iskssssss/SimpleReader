@@ -98,12 +98,12 @@ public class SQLiteUtils {
         Field[] fs = mClass.getDeclaredFields();
         ArrayList<Field> fields = new ArrayList<>();
         for (Field f : fs) {
-            if (!f.isAnnotationPresent(SQLiteAnnotation.class)) {
+            if (!f.isAnnotationPresent(SQLiteAnnotation.class) ) {
                 continue;
             }
             fields.add(f);
         }
-        fields.sort(Comparator.comparingInt(m -> m.getAnnotation(SQLiteAnnotation.class).order()));
+            fields.sort(Comparator.comparingInt(m -> m.getAnnotation(SQLiteAnnotation.class).order()));
         return fields;
     }
 
@@ -120,7 +120,9 @@ public class SQLiteUtils {
         for (int i = 0; i < name.length(); i++) {
             final char c = name.charAt(i);
             if (c > 64 && c < 91) {
-                stringBuilder.append("_");
+                if (i > 0){
+                    stringBuilder.append("_");
+                }
                 stringBuilder.append((char) (c + 32));
                 continue;
             }

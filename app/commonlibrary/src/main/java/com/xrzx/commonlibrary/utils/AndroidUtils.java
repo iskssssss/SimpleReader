@@ -16,6 +16,11 @@ public class AndroidUtils {
         return (int) (spValue * fontScale + 0.5f);
     }
 
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
 
     public static Integer getWidth(Context context) {
         Resources resources = context.getResources();
@@ -28,5 +33,4 @@ public class AndroidUtils {
         DisplayMetrics dm = resources.getDisplayMetrics();
         return dm.heightPixels;
     }
-
 }

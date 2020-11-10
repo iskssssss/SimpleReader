@@ -1,5 +1,7 @@
 package com.xrzx.commonlibrary.entity;
 
+import androidx.annotation.NonNull;
+
 import com.xrzx.commonlibrary.annotation.SQLiteAnnotation;
 import com.xrzx.commonlibrary.enums.SQLiteDataType;
 
@@ -10,7 +12,7 @@ import java.io.Serializable;
  * @Author ks
  * @Date 2020/10/26 11:37
  */
-public class Chapter implements Serializable {
+public class Chapter implements Serializable, Cloneable {
     private static final long serialVersionUID = 42L;
 
     /**
@@ -46,18 +48,15 @@ public class Chapter implements Serializable {
 
     public Chapter() {
     }
-
     public Chapter(String cTitle, String cUrl) {
         this.cTitle = cTitle;
         this.cUrl = cUrl;
     }
-
     public Chapter(Integer cNumber, String cTitle, String cUrl) {
         this.cNumber = cNumber;
         this.cTitle = cTitle;
         this.cUrl = cUrl;
     }
-
     public Chapter(String bUniquelyIdentifies, Integer cNumber, String cTitle, String cUrl) {
         this.bUniquelyIdentifies = bUniquelyIdentifies;
         this.cNumber = cNumber;
@@ -65,53 +64,48 @@ public class Chapter implements Serializable {
         this.cUrl = cUrl;
     }
 
+    //---------------------------------------------------------------------------------------------------------------
+    // start 基础get/set方法
+
     public Long getcId() {
         return cId;
     }
-
     public void setcId(Long cId) {
         this.cId = cId;
     }
-
     public String getbUniquelyIdentifies() {
         return bUniquelyIdentifies;
     }
-
     public void setbUniquelyIdentifies(String bUniquelyIdentifies) {
         this.bUniquelyIdentifies = bUniquelyIdentifies;
     }
-
     public Integer getcNumber() {
         return cNumber;
     }
-
     public void setcNumber(Integer cNumber) {
         this.cNumber = cNumber;
     }
-
     public String getcTitle() {
         return cTitle;
     }
-
     public void setcTitle(String cTitle) {
         this.cTitle = cTitle;
     }
-
     public String getcUrl() {
         return cUrl;
     }
-
     public void setcUrl(String cUrl) {
         this.cUrl = cUrl;
     }
-
     public String getcContent() {
         return cContent;
     }
-
     public void setcContent(String cContent) {
         this.cContent = cContent;
     }
+
+    // end 基础get/set方法
+    //---------------------------------------------------------------------------------------------------------------
 
     @Override
     public String toString() {
@@ -123,5 +117,16 @@ public class Chapter implements Serializable {
                 ", cUrl='" + cUrl + '\'' +
                 ", cContent='" + cContent + '\'' +
                 '}';
+    }
+
+    @NonNull
+    @Override
+    public Chapter clone() {
+        try {
+            return (Chapter) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            throw new InternalError(e);
+        }
     }
 }

@@ -183,7 +183,7 @@ public class ExampleUnitTest {
             String fieldName = field.getName();
             sb.append(nameConversion(fieldName));
             sb.append(" ");
-            sb.append(BookInfoDao.KEY_DICT.get(name));
+//            sb.append(BookInfoDao.KEY_DICT.get(name));
             if (annotation.key()) {
                 sb.append(" ");
                 sb.append("PRIMARY KEY");

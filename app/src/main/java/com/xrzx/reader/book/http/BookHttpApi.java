@@ -42,7 +42,7 @@ public class BookHttpApi {
 
             @Override
             public void onSuccess(String data) {
-                Elements tr = null;
+                Elements tr;
                 try {
                     Document doc = Jsoup.parse(data);
                     Element divTable = doc.getElementsByClass("grid").first();
@@ -90,43 +90,28 @@ public class BookHttpApi {
      * @param callBack 回调
      */
     public static void getBookDetailsInfo(final Book book, final ResultCallBack<Book> callBack) {
-        HttpUtils.getHtmlStringByGet(book.getbBookUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
+        Book newBook = book.isBookShelf() ? book.clone() : book;
+        HttpUtils.getHtmlStringByGet(newBook.getbBookUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
             @Override
             public void onSuccess(String data) {
                 try {
                     Document doc = Jsoup.parse(data);
-                    String lastUpdateTime = doc.getElementById("info").getElementsByTag("p").get(2).html().replace("最后更新：", "");
-                    String lastUpdateChapter = doc.getElementById("info").getElementsByTag("p").get(3).getElementsByTag("a").first().html();
-
-                    List<Book> books = BookInfoDao.findSelection("b_name = ? and b_author = ?", book.getbName(), book.getbAuthor());
-                    if (!books.isEmpty()) {
-                        final Book book1 = books.get(0);
-                        book.setbId(book1.getbId());
-                        book.setbUniquelyIdentifies(book1.getbUniquelyIdentifies());
-                        book.setbType(book1.getbType());
-                        book.setbIntroduction(book1.getbIntroduction());
-                        book.setbCurrentReadChapterId(book1.getbCurrentReadChapterId());
-                        book.setbCurrentReadChapterPage(book1.getbCurrentReadChapterPage());
-                        book.setBookShelf(true);
-                        /*if (!book1.getbLastUpdateChapter().equals(lastUpdateChapter)) {
-                            ContentValues contentValues = new ContentValues();
-                            contentValues.put("b_last_update_chapter", lastUpdateChapter);
-                            contentValues.put("b_last_update_time", lastUpdateTime);
-                            BookInfoDao.update(contentValues, "b_uniquely_identifies = ?", book1.getbUniquelyIdentifies());
-                        }*/
-                        callBack.onSuccess(book);
-                        return;
-                    }
+                    // 获取图书类型
                     Element conTop = doc.getElementsByClass("con_top").first();
                     String type = conTop.getElementsByTag("a").get(2).html();
+                    newBook.setbType(type);
+                    // 获取图书简介
                     String introduction = doc.getElementById("intro").getElementsByTag("p").get(1).html();
-                    book.setbType(type);
-                    book.setbIntroduction(introduction);
-                    book.setbUniquelyIdentifies(BookInfoDao.getUniquelyIdentifies());
-                    book.setbLastUpdateTime(lastUpdateTime);
-                    book.setbLastUpdateChapter(lastUpdateChapter);
-                    book.setbCurrentReadChapterId(1);
-                    book.setbCurrentReadChapterPage(1);
+                    newBook.setbIntroduction(introduction);
+                    // 获取书籍最后更新时间
+                    String lastUpdateTime = doc.getElementById("info").getElementsByTag("p").get(2).html().replace("最后更新：", "");
+                    newBook.setbLastUpdateTime(lastUpdateTime);
+                    // 获取书籍最后更新章节名称
+                    String lastUpdateChapter = doc.getElementById("info").getElementsByTag("p").get(3).getElementsByTag("a").first().html();
+                    newBook.setbLastUpdateChapter(lastUpdateChapter);
+                    // 设置书籍当前阅读章和页
+                    newBook.setbCurrentReadChapterId(1);
+                    newBook.setbCurrentReadChapterPage(1);
                     callBack.onSuccess(book);
                 } catch (Exception e) {
                     callBack.onError(e);
@@ -150,7 +135,7 @@ public class BookHttpApi {
         HttpUtils.getHtmlStringByGet(book.getbChapterUrl(), CHAR_ENCODING, new ResponseCallBack<String>() {
             @Override
             public void onSuccess(String data) {
-                Elements ddItem = null;
+                Elements ddItem;
                 try {
                     Document doc = Jsoup.parse(data);
                     Element divList = doc.getElementById("list");
@@ -172,10 +157,7 @@ public class BookHttpApi {
                             Element a = as.get(0);
                             String title = a.html();
                             String url = as.attr("href");
-                            char startChar = url.charAt(0);
-                            if (startChar != '/') {
-                                url = "/" + url;
-                            }
+                            url = (url.charAt(0) != '/') ? "/" + url : url;
                             chapterList.add(new Chapter(book.getbUniquelyIdentifies(), ++cNumber, title, XBIQUGE_HOME_URL + url));
                         }
                     } catch (Exception e) {
@@ -206,10 +188,10 @@ public class BookHttpApi {
                     Document doc = Jsoup.parse(data);
                     Element divContent = doc.getElementById("content");
                     String content = Html.fromHtml(divContent.html(), Html.FROM_HTML_MODE_LEGACY).toString();
-                    char c1 = 160, c2 = 32;
-                    String spaec1 = "" + c1;
+                    char c = 160;
+                    String space = "" + c;
                     content = content
-                            .replace(spaec1, "  ")
+                            .replace(space, "  ")
                             .replace("    ", "  ")
                             .replace("    ", "  ")
                             .replace("\n\n", "\n")

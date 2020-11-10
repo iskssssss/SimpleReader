@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimaryDark">#FA7298</color>
+
+    <color name="colorReadK61">#EFEFEF</color>
+    <color name="colorReadSettingK61">#FFFFFF</color>
+
+    <color name="colorReadK62">#CDDFCD</color>
+    <color name="colorReadSettingK62">#E3EFE3</color>
+
+    <color name="colorReadK63">#F7EEE5</color>
+    <color name="colorReadSettingK63">#FCF7F3</color>
+
+    <color name="colorReadK64">#FFE3DF</color>
+    <color name="colorReadSettingK64">#FFF1F0</color>
+
+    <color name="colorReadK65">#DFECF0</color>
+    <color name="colorReadSettingK65">#E6F4F5</color>
+
+    <color name="colorReadK66">#EFEFEF</color>
+    <color name="colorReadSettingK66">#FFFFFF</color>
+
+    <color name="colorReadAtNight">#181818</color>
+    <color name="colorReadSettingAtNight">#262626</color>
+
+
+
+
+</resources>

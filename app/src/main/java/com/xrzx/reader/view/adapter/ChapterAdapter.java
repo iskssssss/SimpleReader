@@ -22,15 +22,21 @@ import java.util.List;
  */
 public class ChapterAdapter extends ArrayAdapter<Chapter> {
     private int resourceID;
+    private int fontColor;
     private int itemSelectChapterIndex = -1;
 
     public void setItemSelectChapterIndex(int itemSelectChapterIndex) {
         this.itemSelectChapterIndex = itemSelectChapterIndex;
     }
 
+    public void setFontColor(int fontColor) {
+        this.fontColor = fontColor;
+    }
+
     public ChapterAdapter(@NonNull Context context, int resource, @NonNull List<Chapter> objects) {
         super(context, resource, objects);
-        resourceID = resource;
+        this.resourceID = resource;
+        this.fontColor = context.getColor(R.color.colorReadFontColorBlack);
     }
 
     @NonNull
@@ -42,8 +48,8 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
         if (convertView == null) {
             view = LayoutInflater.from(getContext()).inflate(resourceID, parent, false);
             viewHolder = new ViewHolder();
-            viewHolder.tvTitle = view.findViewById(R.id.ci_tv_Name);
-            viewHolder.tvDownloadStatus = view.findViewById(R.id.ci_tv_DownloadStatus);
+            viewHolder.tvTitle = view.findViewById(R.id.ic_tv_name);
+            viewHolder.tvDownloadStatus = view.findViewById(R.id.ic_tv_download_status);
             view.setTag(viewHolder);
         } else {
             view = convertView;
@@ -51,8 +57,9 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
         }
         viewHolder.tvTitle.setText(chapter.getcTitle());
         viewHolder.tvDownloadStatus.setText(chapter.getcContent() != null ? "" : "未缓存");
+        viewHolder.tvDownloadStatus.setTextColor(this.fontColor);
         if (itemSelectChapterIndex != -1) {
-            final int color = ContextCompat.getColor(getContext(), position + 1 == itemSelectChapterIndex ? R.color.colorChapterSelect : R.color.colorChapterDefault);
+            final int color = position + 1 == itemSelectChapterIndex ? ContextCompat.getColor(getContext(), R.color.colorChapterSelect) : this.fontColor;
             viewHolder.tvTitle.setTextColor(color);
         }
         return view;

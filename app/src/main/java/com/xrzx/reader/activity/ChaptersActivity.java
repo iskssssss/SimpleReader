@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.xrzx.commonlibrary.database.dao.ChapterInfoDao;
@@ -32,8 +34,8 @@ public class ChaptersActivity extends BaseActivity implements View.OnClickListen
             super.handleMessage(msg);
             if (msg.what == 1) {
                 ToastUtils.show("目录加载成功.");
-                if (book.isBookShelf() && ChapterInfoDao.isExistChapters(book)) {
-                    ChapterInfoDao.writeChapters(chapterList);
+                if (currentBook.isBookShelf() && ChapterInfoDao.isExistChapters(currentBook)) {
+                    ChapterInfoDao.writeChapters(currentChapterList);
                 }
                 chapterAdapter.notifyDataSetChanged();
             }
@@ -42,43 +44,59 @@ public class ChaptersActivity extends BaseActivity implements View.OnClickListen
 
     private ListView listView;
     private ChapterAdapter chapterAdapter;
-    private Button btnSort;
+
+    private LinearLayout llSort;
+    private ImageView ivSortImg;
+
+    private void initView() {
+        findViewById(R.id.ac_ll_back).setOnClickListener(this);
+
+        llSort = findViewById(R.id.ac_ll_sort);
+        llSort.setOnClickListener(this);
+        llSort.setTag(true);
+        ivSortImg = findViewById(R.id.ac_iv_sort_img);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chapters);
-        final boolean isChapters = getIntent().getBooleanExtra("isChapters", true);
 
+        initView();
+
+
+        final boolean isChapters = getIntent().getBooleanExtra("isChapters", true);
         ToastUtils.show("正在加载目录...");
         if (isChapters) {
-            getBookInfo();
-            if (chapterList.isEmpty()) {
-                ChapterInfoDao.readChapters(book, chapterList);
-                getChapters(book, chapterList, false, handler, getMessage(1));
+            setCurrentBook();
+            if (currentChapterList.isEmpty()) {
+                ChapterInfoDao.readChapters(currentBook, currentChapterList);
+                getChapters(currentBook, currentChapterList, false, handler, getMessage(1));
             }
         } else {
             OTHER_EXECUTOR_SERVICE_THREAD_POOL.submit(() -> {
-                while (chapterList.isEmpty()) {
+                while (currentChapterList.isEmpty()) {
                 }
                 handler.sendMessage(getMessage(1));
             });
         }
 
-        chapterAdapter = new ChapterAdapter(ChaptersActivity.this, R.layout.chapter_item, chapterList);
-        chapterAdapter.setItemSelectChapterIndex(book.getbCurrentReadChapterId());
-        listView = findViewById(R.id.listView);
+        chapterAdapter = new ChapterAdapter(ChaptersActivity.this, R.layout.item_chapter, currentChapterList);
+        chapterAdapter.setItemSelectChapterIndex(currentBook.getbCurrentReadChapterId());
+        listView = findViewById(R.id.fs_lv_book_shelf);
         listView.setAdapter(chapterAdapter);
 
         // 将书籍目录定位至当前观看的章节位置
-        int visibleListNumber = (int) Math.ceil(((height - AndroidUtils.sp2px(this, 48f)) / 150f) / 2f);
-        if (book.getbCurrentReadChapterId() > visibleListNumber) {
-            listView.setSelection(book.getbCurrentReadChapterId() - visibleListNumber);
+        final int itemChapterHeight = AndroidUtils.sp2px(this, 56f);
+        final float screenHeight = (float) height - AndroidUtils.sp2px(this, 48f);
+        int visibleListNumber = (int) Math.ceil((screenHeight / itemChapterHeight) / 2f);
+        if (currentBook.getbCurrentReadChapterId() > visibleListNumber) {
+            listView.setSelection(currentBook.getbCurrentReadChapterId() - visibleListNumber);
         }
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            book.setbCurrentReadChapterId(position + 1);
-            chapterAdapter.setItemSelectChapterIndex(book.getbCurrentReadChapterId());
-            updateReadingRecord(book.getbCurrentReadChapterId(), 1);
+            currentBook.setbCurrentReadChapterId(position + 1);
+            chapterAdapter.setItemSelectChapterIndex(currentBook.getbCurrentReadChapterId());
+            updateReadingRecord(currentBook.getbCurrentReadChapterId(), 1);
             Intent intent = new Intent(ChaptersActivity.this, ReadActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             setResult(SELECT_CHAPTER_CODE, intent);
@@ -87,33 +105,39 @@ public class ChaptersActivity extends BaseActivity implements View.OnClickListen
             ChaptersActivity.this.finish();
         });
 
-        btnSort = findViewById(R.id.ac_btnSort);
-        btnSort.setOnClickListener(this);
         View btnUpdate = findViewById(R.id.ac_btnUpdate);
         btnUpdate.setOnClickListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")
     @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.ac_btnSort:
-                if (btnSort.getText().equals("逆序")) {
-                    listView.setSelection(chapterList.size() - 1);
-                    btnSort.setText("正序");
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.ac_ll_sort:
+                if ((boolean) llSort.getTag()) {
+                    listView.setSelection(currentChapterList.size() - 1);
+                    setSortStyle(R.drawable.sort1, false);
                 } else {
                     listView.setSelection(0);
-                    btnSort.setText("逆序");
+                    setSortStyle(R.drawable.sort2, true);
                 }
+                break;
+            case R.id.ac_ll_back:
+                ChaptersActivity.this.finish();
                 break;
             case R.id.ac_btnUpdate:
                 ToastUtils.show("正在刷新目录...");
-                getChapters(book, chapterList, false, handler, getMessage(1));
+                getChapters(currentBook, currentChapterList, false, handler, getMessage(1));
                 break;
             default:
                 System.out.println("default");
                 break;
         }
+    }
+
+    private void setSortStyle(int backgroundResource, boolean tag) {
+        ivSortImg.setBackgroundResource(backgroundResource);
+        llSort.setTag(tag);
     }
 
     @Override
