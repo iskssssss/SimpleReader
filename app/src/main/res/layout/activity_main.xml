@@ -2,12 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:theme="@style/AppMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <com.xrzx.reader.view.custom.TitleViewPager
+    <com.xrzx.commonlibrary.view.custom.TitleViewPager
         android:id="@+id/am_tvp_title"
         android:layout_width="0dp"
         android:layout_height="48dp"
@@ -18,6 +17,7 @@
         android:id="@+id/am_vp_main"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="?attr/MainBackgroundColor"
         app:layout_constraintBottom_toTopOf="@+id/am_ll_bottom_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,28 +29,30 @@
         android:layout_height="48dp"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:theme="@style/AppBottomMenuBar"
+        android:background="?attr/MenuBackgroundColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
             android:id="@+id/am_ll_book_shelf_item"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
             tools:ignore="UseCompoundDrawables">
 
-            <ImageView
+            <com.xrzx.commonlibrary.view.custom.ThemeImageView
                 android:id="@+id/am_ll_book_shelf_item_img"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:contentDescription="@string/main_tv_text_bookshelf_str"
-                app:srcCompat="@drawable/book_shelf_default" />
+                android:layout_marginBottom="4dp"
+                android:background="?attr/BookShelfSelectBackground"
+                android:contentDescription="@string/main_tv_text_bookshelf_str" />
 
-            <TextView
+            <com.xrzx.commonlibrary.view.custom.ThemeTextView
+                android:id="@+id/am_tv_book_shelf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/main_tv_text_bookshelf_str" />
@@ -58,25 +60,49 @@
 
         <LinearLayout
             android:id="@+id/am_ll_book_search_item"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
             tools:ignore="UseCompoundDrawables">
 
-            <ImageView
+            <com.xrzx.commonlibrary.view.custom.ThemeImageView
                 android:id="@+id/am_ll_book_search_item_img"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:contentDescription="@string/main_tv_text_search"
-                app:srcCompat="@drawable/search_default" />
+                android:layout_marginBottom="4dp"
+                android:background="?attr/SearchDefaultBackground"
+                android:contentDescription="@string/main_tv_text_search" />
 
-            <TextView
+            <com.xrzx.commonlibrary.view.custom.ThemeTextView
+                android:id="@+id/am_tv_book_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/main_tv_text_search" />
         </LinearLayout>
+
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.xrzx.commonlibrary.view.custom.ThemeImageView
+                android:id="@+id/am_ll_setting_item_img"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="?attr/DialogSettingBackground"
+                android:layout_marginBottom="4dp"
+                android:contentDescription="@string/main_tv_text_bookshelf_str" />
+
+            <com.xrzx.commonlibrary.view.custom.ThemeTextView
+                android:id="@+id/am_tv_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="设置" />
+        </LinearLayout>-->
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

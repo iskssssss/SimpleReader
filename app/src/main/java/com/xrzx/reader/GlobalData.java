@@ -2,9 +2,13 @@ package com.xrzx.reader;
 
 import com.xrzx.commonlibrary.database.dao.BookInfoDao;
 import com.xrzx.commonlibrary.database.dao.ChapterInfoDao;
+import com.xrzx.commonlibrary.database.dao.ReadPageSettingDao;
 import com.xrzx.commonlibrary.entity.Book;
+import com.xrzx.commonlibrary.entity.ReadPageSettingLog;
 import com.xrzx.commonlibrary.utils.DateUtils;
-import com.xrzx.reader.view.adapter.BookShelfListAdapter;
+import com.xrzx.reader.adapter.BookShelfListAdapter;
+import com.xrzx.reader.book.http.BaseCrawling;
+import com.xrzx.reader.book.http.TianLaiCrawling;
 
 import java.util.ArrayList;
 
@@ -28,8 +32,27 @@ public class GlobalData {
     }
 
     private GlobalData() {
-        bookShelfList = new ArrayList<>();
+        this.crawlingApi = new TianLaiCrawling();
+        this.bookShelfList = new ArrayList<>();
+        this.readPageSettingLog = new ReadPageSettingLog();
+        ReadPageSettingDao.read(readPageSettingLog);
     }
+
+    private BaseCrawling crawlingApi;
+
+    public void setCrawlingApi(BaseCrawling crawlingApi) {
+        this.crawlingApi = crawlingApi;
+    }
+
+    public BaseCrawling getCrawlingApi() {
+        return crawlingApi;
+    }
+
+    /**
+     * 阅读设置
+     */
+    public ReadPageSettingLog readPageSettingLog;
+
 
     /**
      * 书架适配器
@@ -100,9 +123,12 @@ public class GlobalData {
         // 设置最后阅读时间
         book.setbNewReadTime(DateUtils.getDateTime());
         // 章节列表初始化
-        book.setChapterList(new ArrayList<>());
+        if (null == book.getChapterList()) {
+            book.setChapterList(new ArrayList<>());
+        }
         // 修改为在书架
         book.setBookShelf(true);
+        book.setbUpdate(0);
         BookInfoDao.writeEntity(book);
         bookShelfList.add(0, book);
         currSelectPosition = 0;
@@ -213,6 +239,10 @@ public class GlobalData {
         setCurrSelectBookAndPosition(book, position, false);
     }
 
+    public void setCurrSelectBook(Book book) {
+        this.currSelectBook = book;
+    }
+
     /**
      * 设置当前选择的书籍和书籍位置
      *
@@ -234,7 +264,7 @@ public class GlobalData {
      */
     public void removeSelectBook() {
         this.currSelectBook = null;
-        this.currSelectPosition = -1;
+        this.currSelectPosition = 0;
     }
     // ---------------------------------------------------------------------------------------------------------
 }

@@ -3,12 +3,12 @@ package com.xrzx.reader.dialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -17,9 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xrzx.commonlibrary.entity.TypefaceEntity;
 import com.xrzx.commonlibrary.enums.ReadPageStyle;
+import com.xrzx.commonlibrary.utils.ThemeUtils;
 import com.xrzx.reader.R;
-import com.xrzx.reader.view.adapter.TypefaceAdapter;
-import com.xrzx.reader.view.base.BaseRecyclerView;
+import com.xrzx.reader.adapter.TypefaceAdapter;
+import com.xrzx.commonlibrary.view.base.BaseRecyclerView;
 
 import java.util.ArrayList;
 
@@ -39,12 +40,6 @@ public class ReadTypefaceSettingDialog {
         return view;
     }
 
-    private Context context;
-
-    public Context getContext() {
-        return context;
-    }
-
     private Window window;
 
     public Window getWindow() {
@@ -53,7 +48,6 @@ public class ReadTypefaceSettingDialog {
 
 
     public ReadTypefaceSettingDialog(Context context, TypefaceAdapter.OnItemClickListener onItemClickListener) {
-        this.context = context;
         initDialog(context, onItemClickListener);
     }
 
@@ -64,7 +58,6 @@ public class ReadTypefaceSettingDialog {
         dialog.setContentView(view);
         window = dialog.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         view.setOnTouchListener((v, e) -> {
             dialog.dismiss();
             return false;
@@ -99,6 +92,11 @@ public class ReadTypefaceSettingDialog {
 
     }
 
+    public void changeTheme(Resources.Theme theme) {
+        ThemeUtils.changeTheme(view.findViewById(R.id.drts_ll_main), theme);
+//        typefaceAdapter.n
+    }
+
     public void setTypefaceId(int id){
         typefaceAdapter.setCurrTypefacesId(id);
     }
@@ -108,14 +106,12 @@ public class ReadTypefaceSettingDialog {
     }
 
     public void setReadPageSetting(ReadPageStyle readPageStyle) {
-        window.setStatusBarColor(ContextCompat.getColor(context, readPageStyle.getColorReadSetting()));
+        window.setStatusBarColor(ContextCompat.getColor(dialog.getContext(), readPageStyle.getColorReadSetting()));
         view.findViewById(R.id.drts_ll_main).setBackgroundResource(readPageStyle.getColorReadSetting());
     }
 
-
     public void setFontColor(int color, boolean atNight) {
         window.getDecorView().setSystemUiVisibility(atNight ? View.SYSTEM_UI_FLAG_LAYOUT_STABLE : View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        ((TextView) view.findViewById(R.id.drts_tv_1)).setTextColor(color);
         typefaceAdapter.setFontColor(color);
         notifyDataSetChanged();
     }
@@ -145,7 +141,6 @@ public class ReadTypefaceSettingDialog {
         rvTypefaces.setAdapter(null);
         typefaceAdapter.clear();
         typefaceAdapter = null;
-        context = null;
         dialog = null;
         window = null;
         view = null;

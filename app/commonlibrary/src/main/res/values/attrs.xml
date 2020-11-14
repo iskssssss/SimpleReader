@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="TextViewColor" format="color" />
+    <attr name="TitleBackgroundColor" format="color" />
+    <attr name="MainBackgroundColor" format="color" />
+    <attr name="MenuBackgroundColor" format="color" />
+
+    <attr name="BookShelfDefaultBackground" format="reference" />
+    <attr name="BookShelfSelectBackground" format="reference" />
+
+    <attr name="SearchDefaultBackground" format="reference" />
+    <attr name="SearchSelectBackground" format="reference" />
+
+    <attr name="BackBackground" format="reference" />
+    <attr name="MoreBackground" format="reference" />
+
+    <attr name="DialogCatalogBackground" format="reference" />
+    <attr name="DialogDownloadBackground" format="reference" />
+    <attr name="DialogNightBackground" format="reference" />
+    <attr name="DialogSettingBackground" format="reference" />
+    <attr name="DialogHorizontalScreenBackground" format="reference" />
+
+</resources>

@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#FA7298</color>
     <color name="colorPrimaryDark">#FA7298</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorAccent">#FA7298</color>
 
     <color name="colorChapterDefault">#000000</color>
     <color name="colorChapterSelect">#FA7298</color>

@@ -41,6 +41,7 @@ public class ReadPageSettingDao extends BaseDao {
         readPageSettingLog.setLuminance(50);
         readPageSettingLog.setLuminanceSystem(1);
         readPageSettingLog.setAtNight(0);
+        readPageSettingLog.setHorizontalScreen(0);
         readPageSettingLog.setReadPageStyle(ReadPageStyle.READ_YD_K61);
         ReadPageSettingDao.insertAll(readPageSettingLog, db);
     }

@@ -40,6 +40,12 @@ public class ReadPageSettingLog {
     private int atNight;
 
     /**
+     * 是否时横屏
+     */
+    private int horizontalScreen;
+
+
+    /**
      * 行间距
      */
     private int rowSpacing;
@@ -95,6 +101,14 @@ public class ReadPageSettingLog {
 
     public void setAtNight(int atNight) {
         this.atNight = atNight;
+    }
+
+    public int getHorizontalScreen() {
+        return horizontalScreen;
+    }
+
+    public void setHorizontalScreen(int horizontalScreen) {
+        this.horizontalScreen = horizontalScreen;
     }
 
     public int getRowSpacing() {
@@ -154,8 +168,18 @@ public class ReadPageSettingLog {
         ReadPageSettingDao.update("read_page_style", this.readPageStyle.name());
     }
 
-    public void sAtNight(boolean atNight) {
+    public void updateAtNight(boolean atNight) {
         this.atNight = atNight ? 1 : 0;
         ReadPageSettingDao.update("at_night", String.valueOf(this.atNight));
+    }
+
+
+    public boolean gHorizontalScreen() {
+        return this.horizontalScreen == 1;
+    }
+
+    public void updateHorizontalScreen(boolean horizontalScreen) {
+        this.horizontalScreen = horizontalScreen ? 1 : 0;
+        ReadPageSettingDao.update("horizontal_screen", String.valueOf(this.horizontalScreen));
     }
 }

@@ -1,29 +1,32 @@
 package com.xrzx.reader.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.BatteryManager;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.xrzx.commonlibrary.database.dao.ReadPageSettingDao;
-import com.xrzx.commonlibrary.entity.ReadPageSettingLog;
-import com.xrzx.commonlibrary.enums.ReadPageStyle;
+import com.xrzx.commonlibrary.utils.ThemeUtils;
 import com.xrzx.commonlibrary.utils.ToastUtils;
+import com.xrzx.reader.GlobalData;
 import com.xrzx.reader.R;
 import com.xrzx.commonlibrary.database.helper.CustomDatabaseHelper;
 import com.xrzx.reader.fragment.BaseTitleFragment;
 import com.xrzx.reader.fragment.BookShelfFragment;
 import com.xrzx.reader.fragment.SearchFragment;
-import com.xrzx.reader.view.custom.TitleViewPager;
+import com.xrzx.commonlibrary.view.custom.TitleViewPager;
+import com.xrzx.reader.fragment.base.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +39,14 @@ import static androidx.fragment.app.FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CU
  * @Date 2020/10/26 11:37
  */
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
+    private GlobalData globalData;
+    private boolean isRecycleTheme = false;
 
     private TitleViewPager vpTitle;
     private ViewPager vpMain;
 
-    private List<Fragment> mainFragments;
-    private List<Fragment> titleFragments;
+    private List<BaseFragment> mainFragments;
+    private List<BaseFragment> titleFragments;
 
     private ImageView bookShelfItemImg;
     private ImageView bookSearchItemImg;
@@ -49,18 +54,25 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.AppTheme);
-        setContentView(R.layout.activity_main);
-
         // 数据库和提示框初始化
         CustomDatabaseHelper.getCustomDatabaseHelper(MainActivity.this);
         ToastUtils.setToast(MainActivity.this);
 
+        globalData = GlobalData.getInstance();
+        if (globalData.readPageSettingLog.gAtNight()) {
+            setTheme(R.style.AppThemeNight);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
+
+        setContentView(R.layout.activity_main);
+
+
         // 底部菜单初始化
         bookShelfItemImg = findViewById(R.id.am_ll_book_shelf_item_img);
-        bookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_select);
+        ThemeUtils.applyBackground(bookShelfItemImg, getTheme(), R.attr.BookShelfSelectBackground);
         bookSearchItemImg = findViewById(R.id.am_ll_book_search_item_img);
-        bookSearchItemImg.setBackgroundResource(R.drawable.search_default);
+        ThemeUtils.applyBackground(bookSearchItemImg, getTheme(), R.attr.SearchDefaultBackground);
 
         // 底部按钮初始化
         findViewById(R.id.am_ll_book_shelf_item).setOnClickListener(this);
@@ -116,6 +128,51 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         });
     }
 
+    @Override
+    protected void onPause() {
+//        isRecycleTheme = false;
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isRecycleTheme) {
+            isRecycleTheme = true;
+            return;
+        }
+        Log.e("主题", "刷新主题。");
+        if (globalData.readPageSettingLog.gAtNight()) {
+            setTheme(R.style.AppThemeNight);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
+        try {
+            TypedValue typedValue = new TypedValue();
+            if (getTheme().resolveAttribute(R.attr.colorPrimaryDark, typedValue, false)) {
+                getWindow().setStatusBarColor(this.getColor(typedValue.data));
+            }
+            if (vpMain.getCurrentItem() == 0){
+                ThemeUtils.applyBackground(bookShelfItemImg, getTheme(), R.attr.BookShelfSelectBackground);
+                ThemeUtils.applyBackground(bookSearchItemImg, getTheme(), R.attr.SearchDefaultBackground);
+            } else {
+                ThemeUtils.applyBackground(bookShelfItemImg, getTheme(), R.attr.BookShelfDefaultBackground);
+                ThemeUtils.applyBackground(bookSearchItemImg, getTheme(), R.attr.SearchSelectBackground);
+            }
+            ThemeUtils.applyBackground(vpMain, getTheme(), R.attr.MainBackgroundColor);
+            ThemeUtils.applyBackground(findViewById(R.id.am_ll_bottom_menu), getTheme(), R.attr.MenuBackgroundColor);
+            ThemeUtils.changeTheme(findViewById(R.id.am_ll_bottom_menu), getTheme());
+            for (BaseFragment mainFragment : mainFragments) {
+                mainFragment.changeTheme(getTheme());
+            }
+            for (BaseFragment titleFragment : titleFragments) {
+                titleFragment.changeTheme(getTheme());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View view) {
@@ -141,17 +198,19 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         try {
             switch (pageId) {
                 case 0:
-                    bookSearchItemImg.setBackgroundResource(R.drawable.search_default);
-                    bookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_select);
+                    ThemeUtils.applyBackground(bookShelfItemImg, getTheme(), R.attr.BookShelfSelectBackground);
+                    ThemeUtils.applyBackground(bookSearchItemImg, getTheme(), R.attr.SearchDefaultBackground);
                     break;
                 case 1:
-                    bookShelfItemImg.setBackgroundResource(R.drawable.book_shelf_default);
-                    bookSearchItemImg.setBackgroundResource(R.drawable.search_select);
+                    ThemeUtils.applyBackground(bookShelfItemImg, getTheme(), R.attr.BookShelfDefaultBackground);
+                    ThemeUtils.applyBackground(bookSearchItemImg, getTheme(), R.attr.SearchSelectBackground);
+
                     break;
                 default:
                     System.out.println("onClickAbsLLBookItem-default");
                     break;
             }
+            mainFragments.get(pageId).changeTheme(getTheme());
             vpTitle.setCurrentItem(pageId);
             vpMain.setCurrentItem(pageId);
         } catch (Exception e) {

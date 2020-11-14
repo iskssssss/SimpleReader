@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -15,9 +14,10 @@ import android.widget.ListView;
 import com.xrzx.commonlibrary.database.dao.ChapterInfoDao;
 import com.xrzx.commonlibrary.utils.AndroidUtils;
 import com.xrzx.commonlibrary.utils.ToastUtils;
+import com.xrzx.reader.GlobalData;
 import com.xrzx.reader.R;
 import com.xrzx.reader.activity.base.BaseActivity;
-import com.xrzx.reader.view.adapter.ChapterAdapter;
+import com.xrzx.reader.adapter.ChapterAdapter;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -60,6 +60,12 @@ public class ChaptersActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GlobalData globalData = GlobalData.getInstance();
+        if (globalData.readPageSettingLog.gAtNight()){
+            setTheme(R.style.AppThemeNight);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
         setContentView(R.layout.activity_chapters);
 
         initView();
@@ -116,10 +122,10 @@ public class ChaptersActivity extends BaseActivity implements View.OnClickListen
             case R.id.ac_ll_sort:
                 if ((boolean) llSort.getTag()) {
                     listView.setSelection(currentChapterList.size() - 1);
-                    setSortStyle(R.drawable.sort1, false);
+                    setSortStyle(R.drawable.ico_sort_asc, false);
                 } else {
                     listView.setSelection(0);
-                    setSortStyle(R.drawable.sort2, true);
+                    setSortStyle(R.drawable.ico_sort_desc, true);
                 }
                 break;
             case R.id.ac_ll_back:

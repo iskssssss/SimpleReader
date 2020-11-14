@@ -5,7 +5,6 @@
     android:id="@+id/isb_ll_item_main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/AppTextColor"
     android:layout_gravity="center_vertical"
     android:gravity="center_vertical"
     android:orientation="horizontal"

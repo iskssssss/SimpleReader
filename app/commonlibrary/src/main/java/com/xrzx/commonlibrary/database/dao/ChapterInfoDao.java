@@ -79,6 +79,27 @@ public class ChapterInfoDao extends BaseDao {
         }
     }
 
+    /**
+     * 更新章节正文
+     *
+     * @param cId      章节id
+     * @param chapters 章节列表
+     */
+    public static void updateChapterContent(ArrayList<Chapter> chapters) {
+        try (SQLiteDatabase db = CUSTOM_DATABASE_HELPER.getWritableDatabase()) {
+            db.beginTransaction();
+            final ContentValues contentValues = new ContentValues();
+            db.setTransactionSuccessful();
+            for (Chapter chapter : chapters) {
+                contentValues.clear();
+                contentValues.put("c_content", chapter.getcContent());
+                db.update(TABLE_NAME, contentValues, "c_id = ?", new String[]{String.valueOf(chapter.getcId())});
+            }
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
     public static void updateChapter(Chapter chapter) {
         final ContentValues contentValues = getContentValues(Chapter.class, chapter);
         try (SQLiteDatabase db = CUSTOM_DATABASE_HELPER.getWritableDatabase()) {
@@ -98,6 +119,9 @@ public class ChapterInfoDao extends BaseDao {
      * @param chapters 章节容器
      */
     public static void readChapters(Book book, List<Chapter> chapters) {
+        if (!book.isBookShelf()){
+            return;
+        }
         final List<Chapter> chapterList = findAll(TABLE_NAME, COLUMNS, "b_uniquely_identifies = ?", new String[]{book.getbUniquelyIdentifies()}, null, null, null);
         chapters.addAll(chapterList);
     }

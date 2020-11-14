@@ -3,18 +3,24 @@ package com.xrzx.reader.dialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
 import com.xrzx.commonlibrary.enums.ReadPageStyle;
+import com.xrzx.commonlibrary.utils.AndroidUtils;
+import com.xrzx.commonlibrary.utils.ThemeUtils;
 import com.xrzx.reader.R;
 
 import java.util.HashMap;
@@ -48,6 +54,10 @@ public class ReadContentSettingDialog {
         this.cbLuminanceSystem.setChecked(checked);
     }
 
+    private ImageView llMoreItemImg;
+    private ImageView llHorizontalScreenItemImg;
+    private TextView tvHorizontalScreen;
+
     public ReadPageStyle getReadPageStyle(int key) {
         return readPageStyleMap.get(key);
     }
@@ -57,12 +67,6 @@ public class ReadContentSettingDialog {
 
     public View getView() {
         return view;
-    }
-
-    private Context context;
-
-    public Context getContext() {
-        return context;
     }
 
     private Window window;
@@ -75,12 +79,11 @@ public class ReadContentSettingDialog {
                                     View.OnClickListener onClickListener,
                                     SeekBar.OnSeekBarChangeListener onSeekBarChangeListener,
                                     CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
-        this.context = context;
         initDialog(context, onClickListener, onSeekBarChangeListener, onCheckedChangeListener);
     }
 
     public void setReadPageSetting(ReadPageStyle readPageStyle) {
-        window.setStatusBarColor(ContextCompat.getColor(context, readPageStyle.getColorReadSetting()));
+        window.setStatusBarColor(ContextCompat.getColor(dialog.getContext(), readPageStyle.getColorReadSetting()));
         view.findViewById(R.id.drcs_ll_main).setBackgroundResource(readPageStyle.getColorReadSetting());
     }
 
@@ -90,15 +93,14 @@ public class ReadContentSettingDialog {
                            SeekBar.OnSeekBarChangeListener onSeekBarChangeListener,
                            CompoundButton.OnCheckedChangeListener onCheckedChangeListener) {
         dialog = new Dialog(context, R.style.default_dialog_style);
-        setView(context, onClickListener, onSeekBarChangeListener, onCheckedChangeListener);
+        setView(dialog.getContext(), onClickListener, onSeekBarChangeListener, onCheckedChangeListener);
         dialog.setContentView(view);
         window = dialog.getWindow();
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(dialog.getContext(), R.color.colorReadSettingK61));
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(true);
     }
+    HashMap<Integer, Integer> paramMap = new HashMap<>(4);
 
     @SuppressLint("ClickableViewAccessibility")
     private void setView(Context context,
@@ -134,6 +136,17 @@ public class ReadContentSettingDialog {
         cbLuminanceSystem = view.findViewById(R.id.drcs_cb_luminance_system);
         cbLuminanceSystem.setOnCheckedChangeListener(onCheckedChangeListener);
 
+        // 横屏切换
+        LinearLayout llHorizontalScreenItem = view.findViewById(R.id.drcs_ll_horizontal_screen_item);
+        llHorizontalScreenItem.setOnClickListener(onClickListener);
+        llHorizontalScreenItemImg = view.findViewById(R.id.drcs_ll_horizontal_screen_item_img);
+        tvHorizontalScreen = view.findViewById(R.id.drcs_tv_horizontal_screen);
+
+        // 更多
+        LinearLayout llMoreItem = view.findViewById(R.id.drcs_ll_more_item);
+        llMoreItem.setOnClickListener(onClickListener);
+        llMoreItemImg =  view.findViewById(R.id.drcs_ll_more_item_img);
+
         readPageStyleMap.put(R.id.drcs_read_btn_k61, ReadPageStyle.READ_YD_K61);
         readPageStyleMap.put(R.id.drcs_read_btn_k62, ReadPageStyle.READ_YD_K62);
         readPageStyleMap.put(R.id.drcs_read_btn_k63, ReadPageStyle.READ_YD_K63);
@@ -145,6 +158,14 @@ public class ReadContentSettingDialog {
             dialog.dismiss();
             return false;
         });
+
+        paramMap.put(R.id.drcs_ll_more_item_img, R.attr.MoreBackground);
+    }
+
+    public void changeTheme(Resources.Theme theme) {
+        ThemeUtils.applyTextColor(cbLuminanceSystem, theme, R.attr.TextViewColor);
+        ThemeUtils.changeTheme(view.findViewById(R.id.drcs_ll_main), theme);
+        ThemeUtils.changeImageViewTheme(view.findViewById(R.id.drcs_ll_main), theme, paramMap);
     }
 
     public void show() {
@@ -156,21 +177,38 @@ public class ReadContentSettingDialog {
         dialog.dismiss();
     }
 
-    public void setFontColor(int color, boolean atNight) {
-        tvFontSizeLess.setTextColor(color);
-        tvFontSizeIncrease.setTextColor(color);
-        cbLuminanceSystem.setTextColor(color);
-        tvFontSizeText.setTextColor(color);
-        tvFontTypeface.setTextColor(color);
-        ((TextView) view.findViewById(R.id.drcs_tv_1)).setTextColor(color);
-        ((TextView) view.findViewById(R.id.drcs_tv_2)).setTextColor(color);
-        ((TextView) view.findViewById(R.id.drcs_tv_3)).setTextColor(color);
-        ((TextView) view.findViewById(R.id.drcs_tv_4)).setTextColor(color);
-        ((TextView) view.findViewById(R.id.drcs_tv_5)).setTextColor(color);
-        ((TextView) view.findViewById(R.id.drcs_tv_6)).setTextColor(color);
-        window.getDecorView().setSystemUiVisibility(atNight ? View.SYSTEM_UI_FLAG_LAYOUT_STABLE : View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+    public void setHorizontalScreenIco(boolean horizontalScreen,boolean atNight) {
+        ViewGroup.LayoutParams params = llHorizontalScreenItemImg.getLayoutParams();
+        if (horizontalScreen) {
+            tvHorizontalScreen.setText("竖屏模式");
+            params.width = AndroidUtils.dip2px(dialog.getContext(),16f);
+            params.height = AndroidUtils.dip2px(dialog.getContext(),24f);
+            llHorizontalScreenItemImg.setMaxWidth(16);
+            llHorizontalScreenItemImg.setMaxHeight(24);
+        } else {
+            tvHorizontalScreen.setText("横屏模式");
+            params.width = AndroidUtils.dip2px(dialog.getContext(),24f);
+            params.height = AndroidUtils.dip2px(dialog.getContext(),16f);
+        }
+        llHorizontalScreenItemImg.setLayoutParams(params);
+        if (atNight) {
+            if (horizontalScreen) {
+                llHorizontalScreenItemImg.setBackgroundResource(R.drawable.ico_vertical_screen_night);
+            } else {
+                llHorizontalScreenItemImg.setBackgroundResource(R.drawable.ico_horizontal_screen_night);
+            }
+            return;
+        }
+        if (horizontalScreen) {
+            llHorizontalScreenItemImg.setBackgroundResource(R.drawable.ico_vertical_screen);
+        } else {
+            llHorizontalScreenItemImg.setBackgroundResource(R.drawable.ico_horizontal_screen);
+        }
     }
 
+    public void setFontColor(int color, boolean atNight) {
+        window.getDecorView().setSystemUiVisibility(atNight ? View.SYSTEM_UI_FLAG_LAYOUT_STABLE : View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+    }
 
     public void finish() {
         dismiss();
@@ -194,10 +232,8 @@ public class ReadContentSettingDialog {
         tvFontSizeIncrease = null;
         sbLuminance = null;
         cbLuminanceSystem = null;
-        context = null;
         dialog = null;
         window = null;
         view = null;
     }
-
 }

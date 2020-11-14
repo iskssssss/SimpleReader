@@ -9,23 +9,22 @@
         android:id="@+id/drts_ll_main"
         android:layout_width="match_parent"
         android:layout_height="256dp"
-        android:background="@color/colorReadSettingK61"
+        android:background="?attr/MenuBackgroundColor"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-
-        <TextView
+        <com.xrzx.commonlibrary.view.custom.ThemeTextView
             android:id="@+id/drts_tv_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             android:text="字  体"
-            android:textColor="@color/colorReadFontColorBlack"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/drts_rv_typefaces"

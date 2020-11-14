@@ -26,7 +26,7 @@ import okhttp3.FormBody;
  * @Author ks
  * @Date 2020/10/26 11:37
  */
-public class BookHttpApi {
+ class BookHttpApi {
     private static final String XBIQUGE_HOME_URL = "http://www.xbiquge.la";
     private static final String CHAR_ENCODING = "utf-8";
 
@@ -39,7 +39,6 @@ public class BookHttpApi {
      */
     public static void searchBooks(final FormBody.Builder searchDict, final ArrayList<Book> bookList, final ResultCallBack<List<Book>> callBack) {
         HttpUtils.getHtmlStringByPost("http://www.xbiquge.la/modules/article/waps.php", searchDict, CHAR_ENCODING, new ResponseCallBack<String>() {
-
             @Override
             public void onSuccess(String data) {
                 Elements tr;
@@ -139,6 +138,9 @@ public class BookHttpApi {
                 try {
                     Document doc = Jsoup.parse(data);
                     Element divList = doc.getElementById("list");
+                    if (null == divList) {
+                        callBack.onError(new Exception("获取失败"));
+                    }
                     Element dl = divList.getElementsByTag("dl").get(0);
                     ddItem = dl.getElementsByTag("dd");
                     if (ddItem == null || ddItem.isEmpty()) {
@@ -187,6 +189,9 @@ public class BookHttpApi {
                 try {
                     Document doc = Jsoup.parse(data);
                     Element divContent = doc.getElementById("content");
+                    if (null == divContent) {
+                        callBack.onError(new Exception("获取失败"));
+                    }
                     String content = Html.fromHtml(divContent.html(), Html.FROM_HTML_MODE_LEGACY).toString();
                     char c = 160;
                     String space = "" + c;

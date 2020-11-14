@@ -79,8 +79,14 @@ public class Book implements Serializable, Cloneable {
     /**
      * 当前阅读章节页数
      */
-    @SQLiteAnnotation(order = 12, dataType = SQLiteDataType.INTEGER)
+    @SQLiteAnnotation(order = 13, dataType = SQLiteDataType.INTEGER)
     private Integer bCurrentReadChapterPage;
+    /**
+     * 是否更新
+     */
+    @SQLiteAnnotation(order = 14, dataType = SQLiteDataType.INTEGER)
+    private Integer bUpdate;
+
     /**
      * 当前书籍是否添加书架
      */
@@ -225,6 +231,14 @@ public class Book implements Serializable, Cloneable {
     }
     public void setbCurrentReadChapterPage(Integer bCurrentReadChapterPage) {
         this.bCurrentReadChapterPage = bCurrentReadChapterPage;
+    }
+
+    public Integer getbUpdate() {
+        return bUpdate;
+    }
+
+    public void setbUpdate(Integer bUpdate) {
+        this.bUpdate = bUpdate;
     }
 
     public boolean isBookShelf() {

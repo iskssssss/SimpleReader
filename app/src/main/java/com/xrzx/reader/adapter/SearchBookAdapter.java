@@ -1,24 +1,24 @@
-package com.xrzx.reader.view.adapter;
+package com.xrzx.reader.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xrzx.reader.R;
 import com.xrzx.commonlibrary.entity.Book;
-import com.xrzx.reader.view.base.BaseRecyclerView;
+import com.xrzx.commonlibrary.view.base.BaseRecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @Description 查询 适配器
@@ -29,12 +29,23 @@ public class SearchBookAdapter extends BaseRecyclerView<SearchBookAdapter.ViewHo
 
     private final int resourceId;
     private final Context context;
+    private int fontColor;
     private final ArrayList<Book> books;
 
     public SearchBookAdapter(Context context, int resourceId, ArrayList<Book> books) {
         this.context = context;
         this.resourceId = resourceId;
         this.books = books;
+        changeTheme(context.getTheme());
+    }
+
+    public void changeTheme(Resources.Theme theme) {
+        TypedValue typedValue = new TypedValue();
+        if (theme.resolveAttribute(R.attr.TextViewColor, typedValue, false)) {
+            this.fontColor = context.getColor(typedValue.data);
+        } else {
+            this.fontColor = context.getColor(R.color.colorReadFontColorBlack);
+        }
     }
 
 
@@ -51,11 +62,15 @@ public class SearchBookAdapter extends BaseRecyclerView<SearchBookAdapter.ViewHo
         holder.llItemMain.setOnClickListener(v -> onItemClickListener.onClick(book, position));
         holder.ivCover.setBackgroundResource(R.drawable.cover);
         holder.tvName.setText(book.getbName());
+        holder.tvName.setTextColor(fontColor);
         holder.tvAuthor.setText(book.getbAuthor());
+        holder.tvAuthor.setTextColor(fontColor);
         holder.tvType.setText(book.getbType() == null ? "书籍类型" : book.getbType());
+        holder.tvType.setTextColor(fontColor);
         holder.tvLastUpdateTime.setText(book.getbLastUpdateTime() == null ? "最后更新时间" : book.getbLastUpdateTime());
-        // viewHolder.tvIntroduction.setText(book.getbIntroduction() == null ? "简介" : book.getbIntroduction());
-        holder.tvIntroduction.setText(book.getbLastUpdateChapter());
+        holder.tvLastUpdateTime.setTextColor(fontColor);
+        holder.tvIntroduction.setText(book.getbIntroduction() == null ? "简介" : book.getbIntroduction());
+        holder.tvIntroduction.setTextColor(fontColor);
     }
 
     @Override
@@ -75,13 +90,13 @@ public class SearchBookAdapter extends BaseRecyclerView<SearchBookAdapter.ViewHo
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout llItemMain;
-        private ImageView ivCover;
-        private TextView tvName;
-        private TextView tvAuthor;
-        private TextView tvType;
-        private TextView tvLastUpdateTime;
-        private TextView tvIntroduction;
+        private final LinearLayout llItemMain;
+        private final ImageView ivCover;
+        private final TextView tvName;
+        private final TextView tvAuthor;
+        private final TextView tvType;
+        private final TextView tvLastUpdateTime;
+        private final TextView tvIntroduction;
 
         public ViewHolder(View view) {
             super(view);

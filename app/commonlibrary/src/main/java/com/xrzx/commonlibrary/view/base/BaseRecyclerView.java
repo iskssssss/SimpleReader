@@ -1,4 +1,4 @@
-package com.xrzx.reader.view.base;
+package com.xrzx.commonlibrary.view.base;
 
 import android.view.ViewGroup;
 

@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
-    android:theme="@style/AppTextColor"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="6dp">
@@ -52,25 +51,40 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginBottom="4dp">
 
             <TextView
                 android:id="@+id/ibs_tv_name"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
+                android:maxWidth="256dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="书名"
+                android:text="书名书名书名书名书名书名名书名名书名"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/ibs_tv_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="●"
+                android:textColor="@color/colorPrimary"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/ibs_tv_name"
+                app:layout_constraintStart_toEndOf="@+id/ibs_tv_name"
+                app:layout_constraintTop_toTopOf="@+id/ibs_tv_name"
+                tools:ignore="SmallSp" />
 
             <LinearLayout
                 android:id="@+id/ibs_ll_details"
@@ -82,14 +96,15 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
+                <com.xrzx.commonlibrary.view.custom.ThemeImageView
+                    android:id="@+id/ibs_iv_more"
                     android:layout_width="16dp"
                     android:layout_height="4dp"
-                    android:background="@drawable/img_more"
+                    android:background="?attr/MoreBackground"
                     android:contentDescription="@string/btn_more_text" />
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -131,11 +146,11 @@
                 android:text="最新更新事件" />
 
             <TextView
+                android:id="@+id/ibs_tv_delimiter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
                 android:layout_marginRight="2dp"
-                
                 android:text="@string/delimiter" />
 
             <TextView

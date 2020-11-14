@@ -2,8 +2,8 @@ package com.xrzx.reader.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -12,11 +12,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.xrzx.commonlibrary.utils.DateUtils;
+import com.xrzx.commonlibrary.utils.ThemeUtils;
+import com.xrzx.reader.GlobalData;
 import com.xrzx.reader.R;
 import com.xrzx.reader.activity.base.BaseActivity;
 import com.xrzx.commonlibrary.entity.Book;
 import com.xrzx.commonlibrary.database.dao.BookInfoDao;
 import com.xrzx.commonlibrary.utils.ToastUtils;
+
+import java.util.HashMap;
 
 /**
  * @Description 书籍信息页
@@ -24,8 +28,11 @@ import com.xrzx.commonlibrary.utils.ToastUtils;
  * @Date 2020/10/26 11:37
  */
 public class BookInfoActivity extends BaseActivity implements View.OnClickListener {
+    private boolean isRecycleTheme = false;
+    HashMap<Integer, Integer> paramMap = new HashMap<>(4);
 
     private Button btnAddBookshelf;
+    private Button btnReadNow;
 
     private TextView tvName;
     private TextView tvAuthor;
@@ -37,6 +44,12 @@ public class BookInfoActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GlobalData globalData = GlobalData.getInstance();
+        if (globalData.readPageSettingLog.gAtNight()) {
+            setTheme(R.style.AppThemeNight);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
         setContentView(R.layout.activity_book_info);
 
         initView();
@@ -58,7 +71,8 @@ public class BookInfoActivity extends BaseActivity implements View.OnClickListen
     private void initView() {
         findViewById(R.id.abi_ll_back).setOnClickListener(this);
         findViewById(R.id.abi_ll_more).setOnClickListener(this);
-        findViewById(R.id.abi_btn_read_now).setOnClickListener(this);
+        btnReadNow = findViewById(R.id.abi_btn_read_now);
+        btnReadNow.setOnClickListener(this);
         btnAddBookshelf = findViewById(R.id.abi_btn_add_book_shelf);
         btnAddBookshelf.setOnClickListener(this);
 
@@ -73,6 +87,9 @@ public class BookInfoActivity extends BaseActivity implements View.OnClickListen
         tvLastUpdateTime = findViewById(R.id.abi_tv_last_update_time);
         tvIntroduction = findViewById(R.id.abi_tv_introduction);
         tvLastUpdateChapter = findViewById(R.id.abi_tv_last_update_chapter_title);
+
+        paramMap.put(R.id.abi_iv_back, R.attr.BackBackground);
+        paramMap.put(R.id.abi_iv_more, R.attr.MoreBackground);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -154,5 +171,34 @@ public class BookInfoActivity extends BaseActivity implements View.OnClickListen
             BookInfoActivity.this.finish();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isRecycleTheme) {
+            isRecycleTheme = true;
+            return;
+        }
+        GlobalData globalData = GlobalData.getInstance();
+        if (globalData.readPageSettingLog.gAtNight()) {
+            setTheme(R.style.AppThemeNight);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
+        TypedValue typedValue = new TypedValue();
+        if (getTheme().resolveAttribute(R.attr.colorPrimaryDark, typedValue, false)) {
+            getWindow().setStatusBarColor(this.getColor(typedValue.data));
+        }
+        ThemeUtils.applyBackground(findViewById(R.id.abi_ll_title), getTheme(), R.attr.TitleBackgroundColor);
+        ThemeUtils.applyBackground(findViewById(R.id.abi_sv_main), getTheme(), R.attr.MainBackgroundColor);
+        ThemeUtils.applyBackground(findViewById(R.id.abi_ll_menu), getTheme(), R.attr.MenuBackgroundColor);
+
+        ThemeUtils.applyTextColor(btnAddBookshelf, getTheme(), R.attr.TextViewColor);
+        ThemeUtils.applyTextColor(btnReadNow, getTheme(), R.attr.TextViewColor);
+
+        ThemeUtils.changeImageViewTheme(findViewById(R.id.abi_ll_title), getTheme(), paramMap);
+        ThemeUtils.changeTextViewTheme(findViewById(R.id.abi_ll_main), getTheme());
+
     }
 }

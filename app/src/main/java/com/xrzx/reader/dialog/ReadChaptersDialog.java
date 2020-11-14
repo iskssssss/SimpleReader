@@ -17,7 +17,7 @@ import com.xrzx.commonlibrary.entity.Chapter;
 import com.xrzx.commonlibrary.enums.ReadPageStyle;
 import com.xrzx.commonlibrary.utils.AndroidUtils;
 import com.xrzx.reader.R;
-import com.xrzx.reader.view.adapter.ChapterAdapter;
+import com.xrzx.reader.adapter.ChapterAdapter;
 
 import java.util.ArrayList;
 
@@ -78,7 +78,6 @@ public class ReadChaptersDialog {
         dialog.setContentView(view);
         window = dialog.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         view.setOnTouchListener((v, e) -> {
             dialog.dismiss();
             return false;

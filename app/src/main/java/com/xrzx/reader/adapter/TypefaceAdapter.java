@@ -1,8 +1,9 @@
-package com.xrzx.reader.view.adapter;
+package com.xrzx.reader.adapter;
 
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xrzx.commonlibrary.entity.TypefaceEntity;
 import com.xrzx.reader.R;
-import com.xrzx.reader.view.base.BaseRecyclerView;
+import com.xrzx.commonlibrary.view.base.BaseRecyclerView;
 
 import java.util.ArrayList;
 
@@ -55,7 +56,12 @@ public class TypefaceAdapter extends BaseRecyclerView<TypefaceAdapter.ViewHolder
         this.context = context;
         this.resourceId = resourceId;
         this.typefaces = typefaces;
-        this.fontColor = context.getColor(R.color.colorReadFontColorBlack);
+        TypedValue typedValue = new TypedValue();
+        if (context.getTheme().resolveAttribute(R.attr.TextViewColor, typedValue, false)) {
+            this.fontColor = context.getColor(typedValue.data);
+        } else {
+            this.fontColor = context.getColor(R.color.colorReadFontColorBlack);
+        }
     }
 
     @NonNull
@@ -70,11 +76,10 @@ public class TypefaceAdapter extends BaseRecyclerView<TypefaceAdapter.ViewHolder
         TypefaceEntity typefaceEntity = typefaces.get(position);
         holder.llItemMain.setOnClickListener(v -> onItemClickListener.onClick(typefaceEntity, position));
         holder.tvSelectStatus.setText((currTypefaces.equals(typefaceEntity)) ? "✔" : "");
-        holder.tvSelectStatus.setTextColor(this.fontColor);
         holder.tvName.setText(typefaceEntity.getName());
-        holder.tvName.setTextColor(this.fontColor);
         Typeface typeface = typefaceEntity.getId() == 0 ? Typeface.SANS_SERIF : this.context.getResources().getFont(typefaceEntity.getResourceNumber());
         holder.tvName.setTypeface(typeface);
+        holder.tvName.setTextColor(this.fontColor);
     }
 
     @Override
@@ -95,9 +100,9 @@ public class TypefaceAdapter extends BaseRecyclerView<TypefaceAdapter.ViewHolder
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private LinearLayout llItemMain;
-        private TextView tvName;
-        private TextView tvSelectStatus;
+        private final LinearLayout llItemMain;
+        private final TextView tvName;
+        private final TextView tvSelectStatus;
 
         public ViewHolder(View view) {
             super(view);

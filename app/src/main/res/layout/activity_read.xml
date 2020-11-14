@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context=".activity.ReadActivity">
 
-    <com.xrzx.reader.view.custom.ChapterContentTextView
+    <com.xrzx.commonlibrary.view.custom.ChapterContentTextView
         android:id="@+id/ar_tv_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"

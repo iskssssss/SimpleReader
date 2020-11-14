@@ -1,8 +1,9 @@
-package com.xrzx.reader.view.adapter;
+package com.xrzx.reader.adapter;
 import com.xrzx.commonlibrary.entity.Chapter;
 import com.xrzx.reader.R;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,12 @@ public class ChapterAdapter extends ArrayAdapter<Chapter> {
     public ChapterAdapter(@NonNull Context context, int resource, @NonNull List<Chapter> objects) {
         super(context, resource, objects);
         this.resourceID = resource;
-        this.fontColor = context.getColor(R.color.colorReadFontColorBlack);
+        TypedValue typedValue = new TypedValue();
+        if (context.getTheme().resolveAttribute(R.attr.TextViewColor, typedValue, false)) {
+            this.fontColor = context.getColor(typedValue.data);
+        } else {
+            this.fontColor = context.getColor(R.color.colorReadFontColorBlack);
+        }
     }
 
     @NonNull

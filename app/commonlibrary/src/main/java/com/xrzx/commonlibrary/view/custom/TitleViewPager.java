@@ -1,9 +1,10 @@
-package com.xrzx.reader.view.custom;
+package com.xrzx.commonlibrary.view.custom;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,4 +56,5 @@ public class TitleViewPager extends ViewPager {
     public void setCurrentItem(int item) {
         super.setCurrentItem(item, smoothScroll);
     }
+
 }

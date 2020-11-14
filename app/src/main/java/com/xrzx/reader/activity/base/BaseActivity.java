@@ -15,12 +15,11 @@ import com.xrzx.commonlibrary.database.dao.BookInfoDao;
 import com.xrzx.commonlibrary.database.dao.ChapterInfoDao;
 import com.xrzx.commonlibrary.entity.Book;
 import com.xrzx.commonlibrary.entity.Chapter;
-import com.xrzx.commonlibrary.entity.ReadPageSettingLog;
 import com.xrzx.commonlibrary.utils.AndroidUtils;
 import com.xrzx.commonlibrary.utils.ThreadUtils;
 import com.xrzx.commonlibrary.utils.ToastUtils;
 import com.xrzx.reader.GlobalData;
-import com.xrzx.reader.book.http.BookHttpApi;
+import com.xrzx.reader.book.http.BaseCrawling;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -34,11 +33,9 @@ public class BaseActivity extends AppCompatActivity {
     protected final static ThreadPoolExecutor OTHER_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getOtherExecutorServiceThreadPool();
     protected final static ThreadPoolExecutor CRAWLING_EXECUTOR_SERVICE_THREAD_POOL = ThreadUtils.getCrawlingExecutorServiceThreadPool();
     protected final static GlobalData GLOBAL_DATA = GlobalData.getInstance();
+    protected final BaseCrawling crawlingApi = GLOBAL_DATA.getCrawlingApi();
 
-    /**
-     * 阅读设置
-     */
-    protected static ReadPageSettingLog READ_PAGE_SETTING = null;
+    protected static boolean isWhirling = true;
 
     /**
      * 当前阅读书籍
@@ -126,12 +123,14 @@ public class BaseActivity extends AppCompatActivity {
      */
     protected void getChapters(Book book, ArrayList<Chapter> chapterList, boolean getContent, Handler handler, Message msg) {
         ArrayList<Chapter> newChapterList = new ArrayList<>();
-        CRAWLING_EXECUTOR_SERVICE_THREAD_POOL.execute(() -> BookHttpApi.getBookChapters(book, newChapterList, new ResultCallBack<ArrayList<Chapter>>() {
+        CRAWLING_EXECUTOR_SERVICE_THREAD_POOL.execute(() -> crawlingApi.getBookChapters(book, newChapterList, new ResultCallBack<ArrayList<Chapter>>() {
             @Override
             public void onSuccess(ArrayList<Chapter> result) {
                 if (chapterList.size() == 0) {
                     chapterList.addAll(newChapterList);
-                    ChapterInfoDao.writeChapters(chapterList);
+                    if (currentBook.isBookShelf()) {
+                        ChapterInfoDao.writeChapters(chapterList);
+                    }
                 } else if (newChapterList.size() != chapterList.size()) {
                     for (int i = chapterList.size(); i < newChapterList.size(); i++) {
                         final Chapter chapter = newChapterList.get(i);
@@ -139,7 +138,9 @@ public class BaseActivity extends AppCompatActivity {
                         if (!book.isBookShelf()) {
                             continue;
                         }
-                        ChapterInfoDao.writeChapter(chapter);
+                        if (currentBook.isBookShelf()) {
+                            ChapterInfoDao.writeChapter(chapter);
+                        }
                     }
                 }
                 if (getContent) {
@@ -168,13 +169,13 @@ public class BaseActivity extends AppCompatActivity {
      */
     protected void getChapterContent(Handler handler, Message message, boolean headDraw, boolean thread) {
         if (thread) {
-            CRAWLING_EXECUTOR_SERVICE_THREAD_POOL.execute(() -> getContent(handler, message, headDraw));
+            CRAWLING_EXECUTOR_SERVICE_THREAD_POOL.execute(() -> getContentAndUpdate(handler, message, headDraw));
             return;
         }
-        getContent(handler, message, headDraw);
+        getContentAndUpdate(handler, message, headDraw);
     }
 
-    protected void getContent(Handler handler, Message message, boolean headDraw) {
+    protected void getContentAndUpdate(Handler handler, Message message, boolean headDraw) {
         final int currentReadChapterId = currentBook.currentReadChapterIdIndex();
         int startIndex = currentReadChapterId - PRELOADED_CHAPTERS_NUMBER_BEFORE;
         int endIndex = currentReadChapterId + PRELOADED_CHAPTERS_NUMBER_AFTER;
@@ -186,7 +187,7 @@ public class BaseActivity extends AppCompatActivity {
         }
         // 判断当前选择的章节内容是否为空  为空则获取内容
         if (null == currentChapterList.get(currentReadChapterId).getcContent()) {
-            getContent(currentChapterList.get(currentReadChapterId));
+            getContentAndUpdate(currentChapterList.get(currentReadChapterId));
         }
         if (null != handler) {
             message.obj = headDraw;
@@ -198,7 +199,7 @@ public class BaseActivity extends AppCompatActivity {
             if (isContinue) {
                 continue;
             }
-            getContent(chapter);
+            getContentAndUpdate(chapter);
         }
     }
 
@@ -207,8 +208,8 @@ public class BaseActivity extends AppCompatActivity {
      *
      * @param chapter 章节信息
      */
-    private void getContent(final Chapter chapter) {
-        BookHttpApi.getBookChapterContent(chapter, new ResultCallBack<String>() {
+    protected void getContentAndUpdate(final Chapter chapter) {
+        crawlingApi.getBookChapterContent(chapter, new ResultCallBack<String>() {
             @Override
             public void onSuccess(String result) {
                 chapter.setcContent(result);
@@ -226,6 +227,25 @@ public class BaseActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 获取文章内容
+     *
+     * @param chapter 章节信息
+     */
+    protected void getContent(final Chapter chapter) {
+        crawlingApi.getBookChapterContent(chapter, new ResultCallBack<String>() {
+            @Override
+            public void onSuccess(String result) {
+                chapter.setcContent(result);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                ToastUtils.show("[" + chapter.getcTitle() + "] 内容获取失败。");
+                e.printStackTrace();
+            }
+        });
+    }
 
     /**
      * 系统亮度

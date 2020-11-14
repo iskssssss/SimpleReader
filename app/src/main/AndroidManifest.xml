@@ -33,7 +33,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.ReadActivity" />
+        <activity android:name=".activity.ReadActivity"
+            />
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,5 +47,5 @@
         <activity android:name=".activity.StartActivity" >
         </activity>
     </application>
-
+<!--    android:configChanges="orientation|keyboardHidden|screenSize"-->
 </manifest>

@@ -10,7 +10,7 @@
         android:id="@+id/drs_ll_top_menu"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/colorReadSettingK61"
+        android:background="?attr/TitleBackgroundColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -26,21 +26,21 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
+            <com.xrzx.commonlibrary.view.custom.ThemeImageView
+                android:id="@+id/drs_ll_back_item_img"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:background="@drawable/back"
+                android:background="?attr/BackBackground"
                 android:contentDescription="@string/btn_back_text" />
         </LinearLayout>
 
-        <TextView
+        <com.xrzx.commonlibrary.view.custom.ThemeTextView
             android:id="@+id/drs_tv_chapter_name"
             android:layout_width="256dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:textColor="#000000"
             android:text="第七百六十七章 仙魔双子合一，同阶无敌"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -60,10 +60,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
+            <com.xrzx.commonlibrary.view.custom.ThemeImageView
+                android:id="@+id/drs_ll_more_item_img"
                 android:layout_width="20dp"
                 android:layout_height="5dp"
-                android:background="@drawable/img_more"
+                android:background="?attr/MoreBackground"
                 android:contentDescription="@string/btn_more_text" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -72,7 +73,7 @@
         android:id="@+id/drs_ll_button_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorReadSettingK61"
+        android:background="?attr/MenuBackgroundColor"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -86,14 +87,13 @@
             android:paddingTop="24dp"
             android:paddingBottom="16dp">
 
-            <TextView
+            <com.xrzx.commonlibrary.view.custom.ThemeTextView
                 android:id="@+id/drs_tv_prev_chapter"
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="center"
-                android:textColor="#000000"
                 android:text="上一章"
                 android:textSize="18sp" />
 
@@ -103,14 +103,13 @@
                 android:layout_height="32dp"
                 android:layout_weight="1" />
 
-            <TextView
+            <com.xrzx.commonlibrary.view.custom.ThemeTextView
                 android:id="@+id/drs_tv_next_chapter"
                 android:layout_width="wrap_content"
                 android:layout_height="24dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
                 android:gravity="center"
-                android:textColor="#000000"
                 android:text="下一章"
                 android:textSize="18sp" />
         </LinearLayout>
@@ -132,18 +131,18 @@
                 android:orientation="vertical"
                 tools:ignore="UseCompoundDrawables">
 
-                <ImageView
+                <com.xrzx.commonlibrary.view.custom.ThemeImageView
                     android:id="@+id/drs_ll_catalog_item_img"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    app:srcCompat="@drawable/book_shelf_default" />
+                    android:background="?attr/DialogCatalogBackground"
+                    android:layout_marginBottom="4dp" />
 
-                <TextView
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drs_tv_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="目录"
-                    android:textColor="#000000" />
+                    android:text="目录" />
             </LinearLayout>
 
             <LinearLayout
@@ -155,18 +154,18 @@
                 android:orientation="vertical"
                 tools:ignore="UseCompoundDrawables">
 
-                <ImageView
+                <com.xrzx.commonlibrary.view.custom.ThemeImageView
                     android:id="@+id/drs_ll_download_item_img"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    app:srcCompat="@drawable/book_shelf_default" />
+                    android:background="?attr/DialogDownloadBackground"
+                    android:layout_marginBottom="4dp" />
 
-                <TextView
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drs_tv_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="缓存"
-                    android:textColor="#000000" />
+                    android:text="缓存全部" />
             </LinearLayout>
 
             <LinearLayout
@@ -178,18 +177,18 @@
                 android:orientation="vertical"
                 tools:ignore="UseCompoundDrawables">
 
-                <ImageView
+                <com.xrzx.commonlibrary.view.custom.ThemeImageView
                     android:id="@+id/drs_ll_night_item_img"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    app:srcCompat="@drawable/book_shelf_default" />
+                    android:background="?attr/DialogNightBackground"
+                    android:layout_marginBottom="4dp" />
 
-                <TextView
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drs_tv_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="夜间"
-                    android:textColor="#000000" />
+                    android:text="夜间" />
             </LinearLayout>
 
             <LinearLayout
@@ -201,18 +200,18 @@
                 android:orientation="vertical"
                 tools:ignore="UseCompoundDrawables">
 
-                <ImageView
+                <com.xrzx.commonlibrary.view.custom.ThemeImageView
                     android:id="@+id/drs_ll_setting_item_img"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    app:srcCompat="@drawable/book_shelf_default" />
+                    android:background="?attr/DialogSettingBackground"
+                    android:layout_marginBottom="4dp" />
 
-                <TextView
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drs_tv_4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="设置"
-                    android:textColor="#000000" />
+                    android:text="设置" />
             </LinearLayout>
 
         </LinearLayout>

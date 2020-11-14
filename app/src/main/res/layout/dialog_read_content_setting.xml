@@ -10,7 +10,7 @@
         android:id="@+id/drcs_ll_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorReadSettingK61"
+        android:background="?attr/MenuBackgroundColor"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,11 +26,10 @@
             android:paddingEnd="16dp"
             android:paddingBottom="8dp">
 
-            <TextView
+            <com.xrzx.commonlibrary.view.custom.ThemeTextView
                 android:id="@+id/drcs_tv_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorReadFontColorBlack"
                 android:text="暗"
                 android:textSize="18sp" />
 
@@ -41,11 +40,10 @@
                 android:max="255"
                 android:layout_weight="1" />
 
-            <TextView
+            <com.xrzx.commonlibrary.view.custom.ThemeTextView
                 android:id="@+id/drcs_tv_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorReadFontColorBlack"
                 android:text="亮"
                 android:textSize="18sp" />
 
@@ -53,10 +51,10 @@
                 android:id="@+id/drcs_cb_luminance_system"
                 android:layout_width="wrap_content"
                 android:layout_height="42dp"
+                android:textColor="?attr/TextViewColor"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="0dp"
                 android:gravity="center"
-                android:textColor="@color/colorReadFontColorBlack"
                 android:text="随系统" />
         </LinearLayout>
 
@@ -77,33 +75,30 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drcs_tv_font_size_less"
                     android:layout_width="64dp"
                     android:layout_height="32dp"
                     android:background="@drawable/read_setting_btn_font_adjustment"
                     android:gravity="center"
                     android:text="-"
-                    android:textColor="@color/colorReadFontColorBlack"
                     android:textSize="24sp"
                     android:textStyle="bold" />
 
-                <TextView
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drcs_tv_font_size_text"
                     android:layout_width="24dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="99"
-                    android:textColor="@color/colorReadFontColorBlack" />
+                    android:text="99" />
 
-                <TextView
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drcs_tv_font_size_increase"
                     android:layout_width="64dp"
                     android:layout_height="32dp"
                     android:background="@drawable/read_setting_btn_font_adjustment"
                     android:gravity="center"
                     android:text="+"
-                    android:textColor="@color/colorReadFontColorBlack"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -116,14 +111,13 @@
                 android:gravity="right|center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drcs_tv_font_typeface"
                     android:layout_width="64dp"
                     android:layout_height="32dp"
                     android:background="@drawable/read_setting_btn_font_adjustment"
                     android:gravity="center"
                     android:text="字体"
-                    android:textColor="@color/colorReadFontColorBlack"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -218,53 +212,23 @@
             android:paddingBottom="8dp">
 
             <LinearLayout
-                android:id="@+id/drcs_llCatalogItem"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical"
-                tools:ignore="UseCompoundDrawables">
-
-                <ImageView
-                    android:id="@+id/drcs_llCatalogItemImg"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/book_shelf_default" />
-
-                <TextView
-                    android:id="@+id/drcs_tv_3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorReadFontColorBlack"
-                    android:text="目录" />
-            </LinearLayout>
+                tools:ignore="UseCompoundDrawables"/>
 
             <LinearLayout
-                android:id="@+id/drcs_llDownloadItem"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical"
-                tools:ignore="UseCompoundDrawables">
-
-                <ImageView
-                    android:id="@+id/drcs_llDownloadItemImg"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/book_shelf_default" />
-
-                <TextView
-                    android:id="@+id/drcs_tv_4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorReadFontColorBlack"
-                    android:text="缓存" />
-            </LinearLayout>
+                tools:ignore="UseCompoundDrawables" />
 
             <LinearLayout
-                android:id="@+id/drcs_llNightItem"
+                android:id="@+id/drcs_ll_horizontal_screen_item"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -272,22 +236,29 @@
                 android:orientation="vertical"
                 tools:ignore="UseCompoundDrawables">
 
-                <ImageView
-                    android:id="@+id/drcs_llNightItemImg"
+                <LinearLayout
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    app:srcCompat="@drawable/book_shelf_default" />
+                    android:layout_marginBottom="4dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/drcs_tv_5"
+                    <com.xrzx.commonlibrary.view.custom.ThemeImageView
+                        android:id="@+id/drcs_ll_horizontal_screen_item_img"
+                        android:layout_width="24dp"
+                        android:layout_height="16dp"
+                        android:background="?attr/DialogHorizontalScreenBackground"/>
+                </LinearLayout>
+
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
+                    android:id="@+id/drcs_tv_horizontal_screen"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorReadFontColorBlack"
                     android:text="横屏模式" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/drcs_llSettingItem"
+                android:id="@+id/drcs_ll_more_item"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -295,18 +266,25 @@
                 android:orientation="vertical"
                 tools:ignore="UseCompoundDrawables">
 
-                <ImageView
-                    android:id="@+id/drcs_llSettingItemImg"
+                <LinearLayout
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    app:srcCompat="@drawable/book_shelf_default" />
+                    android:layout_marginBottom="4dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <TextView
+                    <com.xrzx.commonlibrary.view.custom.ThemeImageView
+                        android:id="@+id/drcs_ll_more_item_img"
+                        android:background="?attr/MoreBackground"
+                        android:layout_width="20dp"
+                        android:layout_height="5dp" />
+                </LinearLayout>
+
+                <com.xrzx.commonlibrary.view.custom.ThemeTextView
                     android:id="@+id/drcs_tv_6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorReadFontColorBlack"
-                    android:text="设置" />
+                    android:text="更多" />
             </LinearLayout>
 
         </LinearLayout>

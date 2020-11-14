@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="0dp"
         android:layout_marginEnd="128dp"
-        android:background="@color/colorReadSettingK62"
+        android:background="?attr/MenuBackgroundColor"
         android:orientation="horizontal">
 
         <ListView

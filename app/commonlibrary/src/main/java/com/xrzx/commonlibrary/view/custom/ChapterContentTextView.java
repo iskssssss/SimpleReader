@@ -1,14 +1,11 @@
-package com.xrzx.reader.view.custom;
+package com.xrzx.commonlibrary.view.custom;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.os.BatteryManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -17,7 +14,6 @@ import com.xrzx.commonlibrary.callback.ResultCallBack;
 import com.xrzx.commonlibrary.entity.Book;
 import com.xrzx.commonlibrary.entity.Chapter;
 import com.xrzx.commonlibrary.utils.AndroidUtils;
-import com.xrzx.commonlibrary.utils.DateUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -321,7 +317,8 @@ public class ChapterContentTextView extends View {
                 try {
                     initParams();
                     contentStr2List();
-                    currentPage = headDraw ? 1 : totalPages;
+
+                    currentPage = headDraw ? currentPage : totalPages;
                 } catch (Exception e) {
                     return;
                 }

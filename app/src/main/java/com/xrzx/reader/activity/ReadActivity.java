@@ -8,6 +8,7 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -18,10 +19,12 @@ import android.widget.SeekBar;
 
 import com.xrzx.commonlibrary.database.dao.ChapterInfoDao;
 import com.xrzx.commonlibrary.database.dao.ReadPageSettingDao;
-import com.xrzx.commonlibrary.entity.ReadPageSettingLog;
 import com.xrzx.commonlibrary.entity.TypefaceEntity;
 import com.xrzx.commonlibrary.enums.ReadPageStyle;
+import com.xrzx.commonlibrary.utils.AndroidUtils;
 import com.xrzx.commonlibrary.utils.DateUtils;
+import com.xrzx.reader.GlobalData;
+import com.xrzx.reader.book.http.BaseCrawling;
 import com.xrzx.reader.dialog.ReadChaptersDialog;
 import com.xrzx.reader.dialog.ReadSettingDialog;
 import com.xrzx.reader.R;
@@ -32,8 +35,8 @@ import com.xrzx.commonlibrary.callback.ResultCallBack;
 import com.xrzx.commonlibrary.enums.TouchMoveDirection;
 import com.xrzx.commonlibrary.utils.ToastUtils;
 import com.xrzx.reader.dialog.ReadTypefaceSettingDialog;
-import com.xrzx.reader.view.base.BaseRecyclerView;
-import com.xrzx.reader.view.custom.ChapterContentTextView;
+import com.xrzx.commonlibrary.view.base.BaseRecyclerView;
+import com.xrzx.commonlibrary.view.custom.ChapterContentTextView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +46,8 @@ import org.jetbrains.annotations.NotNull;
  * @Date 2020/10/26 11:37
  */
 public class ReadActivity extends BaseActivity {
+
+
 
     @SuppressLint("HandlerLeak")
     private final Handler handler = new Handler() {
@@ -65,6 +70,9 @@ public class ReadActivity extends BaseActivity {
                     contentTextView.stopDrawLoadingInfo();
                     contentTextView.startDrawContentInfo();
                     break;
+                case 4:
+                    ToastUtils.show((String) msg.obj);
+                    break;
                 default:
                     System.out.println("handleMessage.default");
                     break;
@@ -73,23 +81,26 @@ public class ReadActivity extends BaseActivity {
     };
 
     private ChapterContentTextView contentTextView;
+
+    private ReadSettingDialog readSettingDialog;
     private ReadContentSettingDialog readContentSettingDialog;
     private ReadTypefaceSettingDialog readTypefaceSettingDialog;
-    private ReadSettingDialog readSettingDialog;
     private ReadChaptersDialog readChaptersDialog;
+    private boolean refreshBatteryAndTime = true;
+    BatteryManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (GLOBAL_DATA.readPageSettingLog.gAtNight()){
+            setTheme(R.style.AppThemeNight);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_read);
-
-        // 读取阅读设置
-        if (READ_PAGE_SETTING == null) {
-            READ_PAGE_SETTING = new ReadPageSettingLog();
-            ReadPageSettingDao.read(READ_PAGE_SETTING);
-        }
 
         initView();
         setCurrentBook();
@@ -101,26 +112,24 @@ public class ReadActivity extends BaseActivity {
         readTypefaceSettingDialog = new ReadTypefaceSettingDialog(this, onTypefaceItemClickListener);
         // 设置阅读样式
         // 字体
-        readTypefaceSettingDialog.setTypefaceId(READ_PAGE_SETTING.getTypeface());
+        readTypefaceSettingDialog.setTypefaceId(GLOBAL_DATA.readPageSettingLog.getTypeface());
         // 亮度 随系统
-        readContentSettingDialog.setLuminanceSystem(READ_PAGE_SETTING.gLuminanceSystem());
+        readContentSettingDialog.setLuminanceSystem(GLOBAL_DATA.readPageSettingLog.gLuminanceSystem());
         // 亮度
-        readContentSettingDialog.setSbLuminance(READ_PAGE_SETTING.getLuminance());
+        readContentSettingDialog.setSbLuminance(GLOBAL_DATA.readPageSettingLog.getLuminance());
         // 设置当前亮度
-        setBrightness(getWindow(), READ_PAGE_SETTING.gLuminanceSystem() ? WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE : (float) READ_PAGE_SETTING.getLuminance());
+        setBrightness(getWindow(), GLOBAL_DATA.readPageSettingLog.gLuminanceSystem() ? WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE : (float) GLOBAL_DATA.readPageSettingLog.getLuminance());
         // 设置字体大小
-        setContentFontSize(READ_PAGE_SETTING.getFontSize());
+        setContentFontSize(GLOBAL_DATA.readPageSettingLog.getFontSize());
 
         // 设置页面样式
-        setReadPageStyle(READ_PAGE_SETTING.gAtNight());
+        setReadPageStyle(GLOBAL_DATA.readPageSettingLog.gAtNight());
 
         // 设置阅读视图样式
-        contentTextView.setFontSize(READ_PAGE_SETTING.getFontSize());
-        contentTextView.setRowSpacing(READ_PAGE_SETTING.getRowSpacing());
-        contentTextView.setPageSpacing(READ_PAGE_SETTING.getPageSpacing());
+        contentTextView.setFontSize(GLOBAL_DATA.readPageSettingLog.getFontSize());
+        contentTextView.setRowSpacing(GLOBAL_DATA.readPageSettingLog.getRowSpacing());
+        contentTextView.setPageSpacing(GLOBAL_DATA.readPageSettingLog.getPageSpacing());
         setTypeface(readTypefaceSettingDialog.getCurrTypefaces());
-
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         // 初始化目录信息
         initCatalogInfo();
@@ -137,8 +146,6 @@ public class ReadActivity extends BaseActivity {
             });
         }
     }
-    private boolean refreshBatteryAndTime = true;
-    BatteryManager manager;
     /**
      * 初始化控件
      */
@@ -169,7 +176,6 @@ public class ReadActivity extends BaseActivity {
         while (refreshBatteryAndTime) {
             try {
                 if (contentTextView.isDrawContentInfo()) {
-                    System.out.println(DateUtils.getDateTime("HH:mm"));
                     contentTextView.setBatteryAndTime(manager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY),
                             DateUtils.getDateTime("HH:mm"));
                 }
@@ -188,7 +194,7 @@ public class ReadActivity extends BaseActivity {
      * @param fontSize 字体大小
      */
     public void setContentFontSize(int fontSize) {
-        readContentSettingDialog.setFontSizeText(READ_PAGE_SETTING.getFontSize());
+        readContentSettingDialog.setFontSizeText(GLOBAL_DATA.readPageSettingLog.getFontSize());
         contentTextView.setFontSize(fontSize);
         contentTextView.invalidate();
     }
@@ -204,7 +210,7 @@ public class ReadActivity extends BaseActivity {
             readPageStyle = ReadPageStyle.READ_YD_AtNight;
             color = getColor(R.color.colorReadFontColorWhite);
         } else {
-            readPageStyle = READ_PAGE_SETTING.getReadPageStyle();
+            readPageStyle = GLOBAL_DATA.readPageSettingLog.getReadPageStyle();
             color = getColor(R.color.colorReadFontColorBlack);
         }
 
@@ -213,6 +219,9 @@ public class ReadActivity extends BaseActivity {
         readChaptersDialog.setFontColor(color, atNight);
         readContentSettingDialog.setFontColor(color, atNight);
         readTypefaceSettingDialog.setFontColor(color, atNight);
+
+        setHorizontalScreen();
+//        readContentSettingDialog.updateIco(atNight);
 
         ReadActivity.this.findViewById(R.id.ar_ll_main).setBackgroundResource(readPageStyle.getColorRead());
         readSettingDialog.setReadPageSetting(readPageStyle);
@@ -235,9 +244,35 @@ public class ReadActivity extends BaseActivity {
                 readSettingDialog.dismiss();
                 readChaptersDialog.show(height);
                 break;
+            /*case R.id.drs_ll_download_item:
+                ToastUtils.show("开始下载.");
+                OTHER_EXECUTOR_SERVICE_THREAD_POOL.submit(() -> {
+                    for (Chapter chapter : currentChapterList) {
+                        if (null != chapter.getcContent() && !"".equals(chapter.getcContent())) {
+                            Log.e("缓存", "《" + chapter.getcTitle() + "》已下载。");
+                            continue;
+                        }
+                        Log.e("缓存", "开始下载：" + chapter.getcTitle());
+                        getContentAndUpdate(chapter);
+                    }
+//                    ChapterInfoDao.updateChapterContent(currentChapterList);
+                    final Message message = getMessage(4);
+                    message.obj = "下载成功。";
+                    handler.sendMessage(message);
+                });
+                break;*/
             case R.id.drs_ll_night_item:
-                READ_PAGE_SETTING.sAtNight(!READ_PAGE_SETTING.gAtNight());
-                setReadPageStyle(READ_PAGE_SETTING.gAtNight());
+                GLOBAL_DATA.readPageSettingLog.updateAtNight(!GLOBAL_DATA.readPageSettingLog.gAtNight());
+                setReadPageStyle(GLOBAL_DATA.readPageSettingLog.gAtNight());
+
+                if (GLOBAL_DATA.readPageSettingLog.gAtNight()){
+                    setTheme(R.style.AppThemeNight);
+                } else {
+                    setTheme(R.style.AppTheme);
+                }
+                readSettingDialog.changeTheme(getTheme());
+                readContentSettingDialog.changeTheme(getTheme());
+                readTypefaceSettingDialog.changeTheme(getTheme());
                 break;
             case R.id.drs_ll_back:
                 ReadActivity.this.finish();
@@ -276,22 +311,27 @@ public class ReadActivity extends BaseActivity {
             case R.id.drcs_read_btn_k65:
             case R.id.drcs_read_btn_k66:
                 final ReadPageStyle readPageStyle = readContentSettingDialog.getReadPageStyle(v.getId());
-                READ_PAGE_SETTING.updateReadPageStyle(readPageStyle);
+                GLOBAL_DATA.readPageSettingLog.updateReadPageStyle(readPageStyle);
                 setReadPageStyle(false);
                 break;
             case R.id.drcs_read_btn_at_night:
-                READ_PAGE_SETTING.sAtNight(true);
+                GLOBAL_DATA.readPageSettingLog.updateAtNight(true);
                 setReadPageStyle(true);
                 break;
             case R.id.drcs_tv_font_size_increase:
-                setContentFontSize(READ_PAGE_SETTING.increaseFontSize());
+                setContentFontSize(GLOBAL_DATA.readPageSettingLog.increaseFontSize());
                 break;
             case R.id.drcs_tv_font_size_less:
-                setContentFontSize(READ_PAGE_SETTING.lessFontSize());
+                setContentFontSize(GLOBAL_DATA.readPageSettingLog.lessFontSize());
                 break;
             case R.id.drcs_tv_font_typeface:
                 readContentSettingDialog.dismiss();
                 readTypefaceSettingDialog.show();
+                break;
+            case R.id.drcs_ll_horizontal_screen_item:
+                isWhirling = true;
+                GLOBAL_DATA.readPageSettingLog.updateHorizontalScreen(!GLOBAL_DATA.readPageSettingLog.gHorizontalScreen());
+                setHorizontalScreen();
                 break;
             default:
                 ToastUtils.show("功能未开发，请尽请期待。");
@@ -300,13 +340,32 @@ public class ReadActivity extends BaseActivity {
     };
 
     /**
+     * 横竖屏切换
+     */
+    private void setHorizontalScreen() {
+        width = AndroidUtils.getWidth(this);
+        height = AndroidUtils.getHeight(this);
+        final boolean horizontalScreen = GLOBAL_DATA.readPageSettingLog.gHorizontalScreen();
+        readContentSettingDialog.setHorizontalScreenIco(horizontalScreen, GLOBAL_DATA.readPageSettingLog.gAtNight());
+        if (!isWhirling) {
+            return;
+        }
+        if (horizontalScreen) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        isWhirling = false;
+    }
+
+    /**
      * 亮度调节器监听器
      */
     SeekBar.OnSeekBarChangeListener readContentSettingDialogSeekBarChange = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            READ_PAGE_SETTING.setLuminance(progress);
-            if (READ_PAGE_SETTING.gLuminanceSystem()) {
+            GLOBAL_DATA.readPageSettingLog.setLuminance(progress);
+            if (GLOBAL_DATA.readPageSettingLog.gLuminanceSystem()) {
                 return;
             }
             setBrightness(getWindow(), (float) progress);
@@ -319,7 +378,7 @@ public class ReadActivity extends BaseActivity {
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            ReadPageSettingDao.update("luminance", String.valueOf(READ_PAGE_SETTING.getLuminance()));
+            ReadPageSettingDao.update("luminance", String.valueOf(GLOBAL_DATA.readPageSettingLog.getLuminance()));
         }
     };
 
@@ -327,8 +386,8 @@ public class ReadActivity extends BaseActivity {
      * 亮度 随系统 监听器
      */
     CompoundButton.OnCheckedChangeListener readContentSettingDialogCheckedChange = (buttonView, isChecked) -> {
-        READ_PAGE_SETTING.sLuminanceSystem(isChecked);
-        setBrightness(getWindow(), READ_PAGE_SETTING.gLuminanceSystem() ? WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE : (float) READ_PAGE_SETTING.getLuminance());
+        GLOBAL_DATA.readPageSettingLog.sLuminanceSystem(isChecked);
+        setBrightness(getWindow(), GLOBAL_DATA.readPageSettingLog.gLuminanceSystem() ? WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE : (float) GLOBAL_DATA.readPageSettingLog.getLuminance());
 
     };
 
@@ -338,7 +397,7 @@ public class ReadActivity extends BaseActivity {
     BaseRecyclerView.OnItemClickListener onTypefaceItemClickListener = (item, position) -> {
         final TypefaceEntity typefaceEntity = (TypefaceEntity) item;
         readTypefaceSettingDialog.setCurrTypefaces(typefaceEntity);
-        READ_PAGE_SETTING.updateTypeface(typefaceEntity.getId());
+        GLOBAL_DATA.readPageSettingLog.updateTypeface(typefaceEntity.getId());
         setTypeface(typefaceEntity);
     };
 
@@ -467,6 +526,8 @@ public class ReadActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+        isWhirling = true;
+
         refreshBatteryAndTime = false;
         readSettingDialog.finish();
         readContentSettingDialog.finish();
@@ -550,9 +611,9 @@ public class ReadActivity extends BaseActivity {
     public TouchMoveDirection touchMoveDirection(float x, float y) {
         float diff = 1e-6f;
         float height21 = height / 2.0f;
-        float height31 = height21 / 3.0f;
+        float height31 = height21 / 2.0f;
         float width21 = width / 2.0f;
-        float width31 = width21 / 3.0f;
+        float width31 = width21 / 2.0f;
 
         if (Math.abs(x - oldEventX) < diff) {
             boolean mid = (x >= width21 - width31 && x <= width21 + width31) &&

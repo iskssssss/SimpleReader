@@ -1,28 +1,71 @@
 <resources>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/font_6</item>
+
+        <item name="android:textColor">@color/colorReadFontColorBlack</item>
+        <item name="android:textColorHint">@color/colorReadFontColorBlack</item>
+
+        <item name="colorControlNormal">@color/colorAccent</item>
+<!--        <item name="colorControlActivated">@color/colorReadFontColorBlack</item>-->
+
+        <item name="TextViewColor">@color/colorReadFontColorBlack</item>
+        <item name="TitleBackgroundColor">@color/colorPrimary</item>
+        <item name="MainBackgroundColor">@color/colorReadK61</item>
+        <item name="MenuBackgroundColor">@color/colorReadSettingK61</item>
+
+        <item name="BookShelfDefaultBackground">@drawable/ico_book_shelf_default</item>
+        <item name="BookShelfSelectBackground">@drawable/ico_book_shelf_select</item>
+
+        <item name="SearchDefaultBackground">@drawable/ico_search_default</item>
+        <item name="SearchSelectBackground">@drawable/ico_search_select</item>
+
+        <item name="BackBackground">@drawable/ico_back</item>
+        <item name="MoreBackground">@drawable/ico_more</item>
+
+        <item name="DialogCatalogBackground">@drawable/ico_catalog</item>
+        <item name="DialogDownloadBackground">@drawable/ico_download</item>
+        <item name="DialogNightBackground">@drawable/ico_at_night</item>
+        <item name="DialogSettingBackground">@drawable/ico_setting</item>
+        <item name="DialogHorizontalScreenBackground">@drawable/ico_horizontal_screen</item>
+
     </style>
 
-    <style name="AppTextColor" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:textColor">@color/colorChapterDefault</item>
-        <item name="android:editTextColor">@color/colorChapterDefault</item>
-    </style>
+    <style name="AppThemeNight" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorReadSettingAtNight</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/font_6</item>
 
-    <style name="AppTitle" parent="AppTextColor">
-        <item name="android:background">@color/colorPrimary</item>
-    </style>
+        <item name="android:textColor">@color/colorReadFontColorWhite</item>
+        <item name="android:textColorHint">@color/colorReadFontColorWhite</item>
 
-    <style name="AppMain" parent="AppTextColor">
-        <item name="android:background">@color/colorReadK61</item>
-    </style>
+        <item name="colorControlNormal">@color/colorAccent</item>
+<!--        <item name="colorControlActivated">@color/colorReadFontColorWhite</item>-->
 
-    <style name="AppBottomMenuBar" parent="AppTextColor">
-        <item name="android:background">@color/colorReadSettingK61</item>
+        <item name="TextViewColor">@color/colorReadFontColorWhite</item>
+        <item name="TitleBackgroundColor">@color/colorReadSettingAtNight</item>
+        <item name="MainBackgroundColor">@color/colorReadAtNight</item>
+        <item name="MenuBackgroundColor">@color/colorReadSettingAtNight</item>
+
+        <item name="BookShelfDefaultBackground">@drawable/ico_book_shelf_default_night</item>
+        <item name="BookShelfSelectBackground">@drawable/ico_book_shelf_select_night</item>
+
+        <item name="SearchDefaultBackground">@drawable/ico_search_default_night</item>
+        <item name="SearchSelectBackground">@drawable/ico_search_select_night</item>
+
+        <item name="BackBackground">@drawable/ico_back_night</item>
+        <item name="MoreBackground">@drawable/ico_more_night</item>
+
+        <item name="DialogCatalogBackground">@drawable/ico_catalog_night</item>
+        <item name="DialogDownloadBackground">@drawable/ico_download_night</item>
+        <item name="DialogNightBackground">@drawable/ico_daytime</item>
+        <item name="DialogSettingBackground">@drawable/ico_setting_night</item>
+        <item name="DialogHorizontalScreenBackground">@drawable/ico_horizontal_screen_night</item>
+
     </style>
 
     <style name="MyDialogStyle">

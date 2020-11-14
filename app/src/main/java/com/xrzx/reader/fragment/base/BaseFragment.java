@@ -1,6 +1,7 @@
 package com.xrzx.reader.fragment.base;
 
 import android.annotation.SuppressLint;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -46,5 +47,9 @@ public class BaseFragment extends Fragment {
         } catch (Exception e) {
             Log.e("BaseFragment", Objects.requireNonNull(e.getLocalizedMessage()));
         }
+    }
+
+    public void changeTheme(Resources.Theme theme) {
+
     }
 }

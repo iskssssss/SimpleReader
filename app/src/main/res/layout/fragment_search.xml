@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:autofillHints=""
+        android:textColor="?attr/TextViewColor"
         android:ems="10"
-        android:textColor="#000000"
         android:hint="@string/search_et_hint"
         android:inputType="textPersonName" />
 
